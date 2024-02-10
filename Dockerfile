@@ -57,10 +57,8 @@ RUN \
 	python3-sqlalchemy \
 	python3-sqlparse \
 	python3-tempita \
-	python3.6 \
- 	python3.10 \
- 	python3.6-minimal \
-	python3.10-minimal \
+	python3.10 \
+ 	python3.10-minimal \
 	sqlite3 \
 	systemctl \
  	unzip \
