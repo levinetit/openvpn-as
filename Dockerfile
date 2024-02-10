@@ -74,11 +74,11 @@ RUN \
 	|grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}');\
  fi && \
  echo "$OPENVPNAS_VERSION" > /version.txt && \
- echo "**** ensure home folder for abc user set to /config ****" && \
- usermod -d /config abc && \
- echo "**** create admin user and set default password for it ****" && \
- useradd -s /sbin/nologin admin && \
- echo "admin:password" | chpasswd && \
+# echo "**** ensure home folder for abc user set to /config ****" && \
+# usermod -d /config abc && \
+# echo "**** create admin user and set default password for it ****" && \
+# useradd -s /sbin/nologin admin && \
+# echo "admin:password" | chpasswd && \
  rm -rf \
 	/tmp/*
 
