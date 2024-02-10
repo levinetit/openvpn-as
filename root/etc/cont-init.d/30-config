@@ -8,6 +8,9 @@ if [ ! -c /dev/net/tun ]; then
   mknod /dev/net/tun c 10 200
 fi
 
+echo "Please login with the originally generated password. Please make sure to change it. If you have already changed it, please disregard"
+grep -i 'password.$' /usr/local/openvpn_as/init.log
+
 shopt -s extglob
 # install or update openvpn-as
 if [ -f /version.txt ]; then
