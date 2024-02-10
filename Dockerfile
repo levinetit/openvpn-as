@@ -23,25 +23,23 @@ RUN \
 	libatm1 \
 	libelf1 \
 	libexpat1 \
-	libip4tc0 \
-	libip6tc0 \
 	libiptc0 \
 	liblzo2-2 \
 	libmagic-mgc \
 	libmagic1 \
 	libmariadb3 \
 	libmnl0 \
-	libmpdec2 \
-	libmysqlclient20 \
+	libmpdec3 \
+	libmysqlclient21 \
 	libnetfilter-conntrack3 \
 	libnfnetlink0 \
 	libpcap0.8 \
 	libpython3-stdlib \
-	libpython3.6-minimal \
-	libpython3.6-stdlib \
+	libpython3.10-minimal \
+	libpython3.10-stdlib \
 	libxtables12 \
 	mime-support \
-	multiarch-support \
+	binutils-multiarch \
 	mysql-common \
 	net-tools \
 	python3 \
@@ -58,13 +56,13 @@ RUN \
 	python3-sqlparse \
 	python3-tempita \
 	python3.10 \
- 	python3.10-minimal \
+	python3.10-minimal \
+ 	systemctl \
 	sqlite3 \
-	systemctl \
  	unzip \
- 	wget \
- 	xz-utils \
-  	zip && \
+ 	wget \ 
+	xz-utils \
+ 	zip && \
  echo "**** add openvpn-as repo ****" && \
  wget https://as-repository.openvpn.net/as-repo-public.asc -O /etc/apt/trusted.gpg.d/as-repository.asc && \
  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://as-repository.openvpn.net/as/debian jammy main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
@@ -78,7 +76,6 @@ RUN \
 # usermod -d /config abc && \
 # echo "**** create admin user and set default password for it ****" && \
 # useradd -s /sbin/nologin admin && \
-# echo "admin:password" | chpasswd && \
  rm -rf \
 	/tmp/*
 
@@ -86,5 +83,5 @@ RUN \
 COPY /root /
 
 # ports and volumes
-EXPOSE 943/tcp 1194/udp 1195/tcp
+EXPOSE 943/tcp 1194/udp 9443/tcp
 VOLUME /config
