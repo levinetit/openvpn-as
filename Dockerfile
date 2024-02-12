@@ -16,7 +16,7 @@ RUN \
  apt-get install -y \
     bridge-utils \
     ca-certificates \
-    curl \ # adaugarea pachetului curl
+    curl \ 
     file \
     gnupg \
     iproute2 \
