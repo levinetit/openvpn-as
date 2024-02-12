@@ -1,15 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-# ensure home folder for abc user is set to /config
-echo "**** ensure home folder for abc user set to /config ****" && \
-usermod -d /config abc && \
-
-# create admin user and set default password for it
-echo "**** create admin user and set default password for it ****" && \
-useradd -s /sbin/nologin admin && \
-echo "admin:password" | chpasswd && \
-
-# make folders
+# make folders
 mkdir -p /openvpn{/pid,/sock,/tmp} /dev/net /config/log /config/etc/tmp
 
 # create tun device
@@ -21,7 +12,7 @@ echo "Please login with the originally generated password. Please make sure to c
 grep -i 'password.$' /usr/local/openvpn_as/init.log
 
 shopt -s extglob
-# install or update openvpn-as
+# install or update openvpn-as
 if [ -f /version.txt ]; then
 	OPENVPNAS_VERSION=$(cat /version.txt)
 	rm -rf /usr/local/openvpn_as
@@ -80,7 +71,7 @@ if [ -f /version.txt ]; then
 fi
 shopt -u extglob
 
-# clear old sock files
+# clear old sock files
 for file in /openvpn/sock/*
 	do
 		if [ -e "$file" ]; then
@@ -88,7 +79,7 @@ for file in /openvpn/sock/*
 		fi
 	done
 
-# clear old pid files
+# clear old pid files
 for file in /openvpn/pid/*
 	do
 		if [ -e "$file" ]; then
@@ -97,6 +88,6 @@ for file in /openvpn/pid/*
 	done
 
 
-# permissions
+# permissions
 chown abc:abc /config/log /config/etc/tmp
 chmod -R 755 /openvpn
