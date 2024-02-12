@@ -60,7 +60,7 @@ RUN \
     systemctl \
     sqlite3 \
     unzip \
-    wget \ 
+    wget \
     xz-utils \
     zip && \
  echo "**** instalare certificăte, wget, net-tools, gnupg ****" && \
