@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 RUN \
  echo "**** instalare dependențe ****" && \
  apt-get update && \
- apy-get dist-upgrade -y && \
+ apt-get -y dist-upgrade && \
  apt-get install -y \
 	bridge-utils \
  	ca-certificates \
@@ -65,7 +65,7 @@ RUN \
 	xz-utils \
  	zip && \
  echo "**** instalare certificăte, wget, net-tools, gnupg ****" && \
- apt update && apt -y install ca-certificates wget net-tools gnupg && \
+ apt-get -y install ca-certificates wget net-tools gnupg && \
  wget https://as-repository.openvpn.net/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://as-repository.openvpn.net/as/debian jammy main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
  apt update && apt -y install openvpn-as && \
@@ -78,6 +78,7 @@ echo "**** asigurați că directorul home pentru utilizatorul abc este setat la 
 usermod -d /config abc && \
 echo "**** creați utilizatorul admin și setați parola implicită pentru acesta ****" && \
 useradd -s /sbin/nologin admin && \
+echo "admin:password" | chpasswd && \
  rm -rf \
 	/tmp/*
 
