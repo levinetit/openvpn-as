@@ -16,7 +16,7 @@ RUN \
  apt-get install -y \
 	bridge-utils \
  	ca-certificates \
-    curl \  
+    	curl \  
 	file \
 	gnupg \
 	iproute2 \
