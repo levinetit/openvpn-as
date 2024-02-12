@@ -1,10 +1,10 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
+FROM ubuntu:jammy
 
 # set version label
 ARG BUILD_DATE
 ARG VERSION
 ARG OPENVPNAS_VERSION 
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
 
 # environment settings
@@ -13,6 +13,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 RUN \
  echo "**** instalare dependențe ****" && \
  apt-get update && \
+ apy-get dist-upgrade -y && \
  apt-get install -y \
 	bridge-utils \
  	ca-certificates \
@@ -73,10 +74,10 @@ RUN \
 	|grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}');\
  fi && \
  echo "$OPENVPNAS_VERSION" > /version.txt && \
-# echo "**** asigurați că directorul home pentru utilizatorul abc este setat la /config ****" && \
-# usermod -d /config abc && \
-# echo "**** creați utilizatorul admin și setați parola implicită pentru acesta ****" && \
-# useradd -s /sbin/nologin admin && \
+echo "**** asigurați că directorul home pentru utilizatorul abc este setat la /config ****" && \
+usermod -d /config abc && \
+echo "**** creați utilizatorul admin și setați parola implicită pentru acesta ****" && \
+useradd -s /sbin/nologin admin && \
  rm -rf \
 	/tmp/*
 
