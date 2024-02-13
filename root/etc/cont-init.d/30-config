@@ -1,22 +1,28 @@
 #!/usr/bin/with-contenv bash
 
-# Crearea directoriilor necesare
+# Check if confdba exists
+if [ ! -x /usr/local/openvpn_as/scripts/confdba ]; then
+    echo "Error: confdba not found or not executable. Exiting."
+    exit 1
+fi
+
+# Create necessary directories
 mkdir -p /openvpn/pid /openvpn/sock /openvpn/tmp /dev/net /config/log /config/etc/tmp
 
-# Crearea dispozitivului tun dacă nu există
+# Create the tun device if it doesn't exist
 if [ ! -c /dev/net/tun ]; then
-  mknod /dev/net/tun c 10 200
+    mknod /dev/net/tun c 10 200
 fi
 
 echo "Please login with the originally generated password."
 echo "Please make sure to change it. If you have already changed it, please disregard."
 
-# Verificarea existenței fișierului PID și oprirea procesului OpenVPN
+# Check if the OpenVPN Access Server process is running and stop it
 if [ -f /var/run/openvpnas.pid ]; then
-    kill $(cat /var/run/openvpnas.pid)
+    kill "$(cat /var/run/openvpnas.pid)"
 fi
 
-# Instalare sau actualizare openvpn-as
+# Install or update openvpn-as
 if [ -f /version.txt ]; then
     OPENVPNAS_VERSION=$(cat /version.txt)
     rm -rf /usr/local/openvpn_as
@@ -25,21 +31,21 @@ if [ -f /version.txt ]; then
         echo "Installing openvpn-as for the first time"
         apt-get update && \
         apt-get install -y \
-            openvpn-as=$OPENVPNAS_VERSION
+            openvpn-as="$OPENVPNAS_VERSION"
     else
         echo "Existing data found, reinstalling openvpn-as"
         apt-get update && \
         apt-get install -y \
-            openvpn-as=$OPENVPNAS_VERSION
+            openvpn-as="$OPENVPNAS_VERSION"
     fi
 fi
 
-# Copierea conținutului din /usr/local/openvpn_as în /config
+# Copy contents from /usr/local/openvpn_as to /config
 cp -R /usr/local/openvpn_as/* /config
 
-# Ștergerea fișierelor vechi de tip sock și pid
+# Remove old sock and pid files
 rm -rf /openvpn/sock/* /openvpn/pid/*
 
-# Stabilirea permisiunilor adecvate pe directoarele configurate
+# Set permissions on configured directories
 chown -R abc:abc /config/log /config/etc/tmp
 chmod -R 755 /openvpn
