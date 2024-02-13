@@ -74,10 +74,6 @@ RUN \
 	|grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}');\
  fi && \
  echo "$OPENVPNAS_VERSION" > /version.txt && \
-# echo "**** asigurați că directorul home pentru utilizatorul abc este setat la /config ****" && \
-# usermod -d /config abc && \
-# echo "**** creați utilizatorul admin și setați parola implicită pentru acesta ****" && \
-# useradd -s /sbin/nologin admin && \
  rm -rf \
 	/tmp/*
 
