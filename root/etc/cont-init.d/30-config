@@ -1,28 +1,28 @@
 #!/usr/bin/with-contenv bash
 
-# make folders
-mkdir -p /openvpn{/pid,/sock,/tmp} /dev/net /config/log /config/etc/tmp
+# Crează directoarele necesare
+mkdir -p /openvpn/{pid,sock,tmp} /dev/net /config/log /config/etc/tmp
 
-# create tun device
+# Crează dispozitivul tun dacă nu există
 if [ ! -c /dev/net/tun ]; then
   mknod /dev/net/tun c 10 200
 fi
 
-echo "Please login with the originally generated password. Please make sure to change it. If you have already changed it, please disregard"
+# Afișează parola inițială generată pentru OpenVPN-AS
+echo "Vă rugăm să vă autentificați cu parola inițială generată. / Asigurați-vă că o schimbați ulterior. Dacă ați schimbat deja parola, vă rugăm să ignorați acest mesaj."
 grep -i 'password.$' /usr/local/openvpn_as/init.log
 
-shopt -s extglob
-# install or update openvpn-as
+# Verifică existența fișierului de versiune și instalează/actualizează OpenVPN-AS
 if [ -f /version.txt ]; then
 	OPENVPNAS_VERSION=$(cat /version.txt)
 	rm -rf /usr/local/openvpn_as
 	ln -s /config /usr/local/openvpn_as
 	if [ ! -f /config/etc/as.conf ]; then
-		echo "installing openvpn-as for the first time"
+		echo "Se instalează OpenVPN-AS pentru prima dată"
 		apt-get update && \
 		apt-get install -y \
 			openvpn-as=$OPENVPNAS_VERSION
-		echo "Stopping openvpn-as now; will start again later after configuring"
+		echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
 		kill `cat /var/run/openvpnas.pid`
 		rm /version.txt
 		sed -i \
@@ -31,23 +31,23 @@ if [ -f /version.txt ]; then
 			-e 's#~/sock#/openvpn/sock#g' \
 			/usr/local/openvpn_as/etc/as_templ.conf
 	else
-		echo "existing data found, reinstalling openvpn-as"
+		echo "Date existente găsite, se reinstalează OpenVPN-AS"
 		mkdir -p /config/backup
 		cd /config/etc/db || exit
 		DBFILESBAK="*.db"
 		for f in $DBFILESBAK
 		do
-			echo "backing up $f"
+			echo "Se face backup pentru $f"
 			sqlite3 "$f" .dump > /config/backup/"$f"
 		done
-		echo "backing up as.conf"
+		echo "Se face backup pentru as.conf"
 		cp /config/etc/as.conf /config/backup/as.conf
 		cd /config || exit
 		rm -rf !("backup"|"log"|"custom-cont-init.d"|"custom-services.d")
 		apt-get update && \
 		apt-get install -y \
 			openvpn-as=$OPENVPNAS_VERSION
-		echo "Stopping openvpn-as now; will start again later after configuring"
+		echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
 		kill `cat /var/run/openvpnas.pid`
 		rm /version.txt
 		sed -i \
@@ -59,35 +59,21 @@ if [ -f /version.txt ]; then
 		DBFILERES="*.db"
 		for f in $DBFILERES
 		do
-			echo "restoring $f"
+			echo "Se restaurează $f"
 			rm -f /config/etc/db/"$f"
 			sqlite3 </config/backup/"$f" /config/etc/db/"$f"
 		done
 		rm -f /config/etc/as.conf
-		echo "restoring as.conf"
+		echo "Se restaurează as.conf"
 		cp /config/backup/as.conf /config/etc/as.conf
 		rm -rf /config/backup
 	fi
 fi
-shopt -u extglob
 
-# clear old sock files
-for file in /openvpn/sock/*
-	do
-		if [ -e "$file" ]; then
-		rm -rf "$file"
-		fi
-	done
+# Șterge fișierele vechi de tip sock și pid
+rm -rf /openvpn/sock/*
+rm -rf /openvpn/pid/*
 
-# clear old pid files
-for file in /openvpn/pid/*
-	do
-		if [ -e "$file" ]; then
-		rm -rf "$file"
-		fi
-	done
-
-
-# permissions
+# Setează permisiunile adecvate
 chown abc:abc /config/log /config/etc/tmp
 chmod -R 755 /openvpn
