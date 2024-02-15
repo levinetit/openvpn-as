@@ -76,8 +76,13 @@ RUN \
  echo "$OPENVPNAS_VERSION" > /version.txt && \
  rm -rf \
 	/tmp/*
+ 
+# Copiază fișierul în directorul de lucru al containerului Docker
+COPY pyovpn-2.0-py3.10.egg /tmp/
+
+# Redenumește fișierul original și adaugă noul fișier
 RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
-    cp pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
+    cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
     
 # adaugare fișiere locale
 COPY /root /
