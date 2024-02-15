@@ -68,7 +68,7 @@ RUN \
  apt update && apt -y install ca-certificates wget net-tools gnupg && \
  wget https://as-repository.openvpn.net/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://as-repository.openvpn.net/as/debian jammy main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
- apt update && apt -y install openvpn-as && \
+ apt update && apt -y install openvpn-as openvpn-dco-dkms && \
  if [ -z ${OPENVPNAS_VERSION+x} ]; then \
 	OPENVPNAS_VERSION=$(curl -sX GET http://as-repository.openvpn.net/as/debian/dists/jammy/main/binary-amd64/Packages.gz | gunzip -c \
 	|grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}');\
