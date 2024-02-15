@@ -76,7 +76,9 @@ RUN \
  echo "$OPENVPNAS_VERSION" > /version.txt && \
  rm -rf \
 	/tmp/*
-
+RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
+    cp pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
+    
 # adaugare fișiere locale
 COPY /root /
 
