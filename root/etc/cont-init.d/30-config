@@ -9,7 +9,8 @@ if [ ! -c /dev/net/tun ]; then
 fi
 
 # Afișează parola inițială generată pentru OpenVPN-AS
-echo "Vă rugăm să vă autentificați cu parola inițială generată. / Asigurați-vă că o schimbați ulterior. Dacă ați schimbat deja parola, vă rugăm să ignorați acest mesaj."
+echo "Vă rugăm să vă autentificați cu parola inițială generată.
+echo Asigurați-vă că o schimbați ulterior. Dacă ați schimbat deja parola, vă rugăm să ignorați acest mesaj."
 grep -i 'password.$' /usr/local/openvpn_as/init.log
 
 # Verifică existența fișierului de versiune și instalează/actualizează OpenVPN-AS
