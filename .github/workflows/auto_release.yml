@@ -21,7 +21,7 @@ jobs:
 
       # Create a Release (Optional Draft)
       - name: Create a Release (using Node.js 20)
-        uses: actions/create-release@v4  # Official GitHub action, compatible with Node.js 20
+        uses: actions/create-release@v1.1.4  # Official GitHub action, compatible with Node.js 20
         with:
           tag_name: "v1.${{ github.run_number }}"  # Consider semantic versioning for real-world scenarios
           release_name: "Release v1.${{ github.run_number }}"  # Consider semantic versioning
