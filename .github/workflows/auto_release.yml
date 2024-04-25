@@ -3,7 +3,7 @@ name: Auto Release
 on:
   push:
     branches:
-      - main  # Schimbă la branch-ul tău principal, dacă este diferit
+      - master  # Replace with your actual branch name
 
 jobs:
   create_release:
@@ -12,28 +12,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Obține informații despre commit
-      - name: Obține Informații despre Commit
+      # Get information about branch and commit
+      - name: Get the Commit Information
         id: commit_info
         run: |
           echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
           echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # Creează un tag pentru release
-      - name: Setează Tag-ul
-        run: |
-          TAG="v1.0.${{ github.run_number }}"
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
-      # Creează un release
+      # Create a Release (Optional Draft)
       - name: Create a Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.TAG }}  # Tag-ul pentru release
+          # You can use semantic versioning or integrate with your codebase here
+          tag_name: "v1.${{ github.run_number }}"  # Update versioning as needed
+          release_name: "Release v1.${{ github.run_number }}"  # Update versioning as needed
           body: |
             Commit: ${{ env.COMMIT_HASH }}
-            Mesaj: ${{ env.COMMIT_MESSAGE }}
-          draft: false
+            Message: ${{ env.COMMIT_MESSAGE }}
+          draft: ${{ inputs.create_draft_release || false }}  # Optional draft release
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token pentru autentificare
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
