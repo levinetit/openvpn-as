@@ -1,4 +1,4 @@
-nume: CI pentru Imagini Docker
+nume: Docker Image CI
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    pași:
+    steps:
       - name: Verificare Repo
         uses: actions/checkout@v4
 
@@ -20,21 +20,22 @@ jobs:
         run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
       # Autentificare pe Docker Hub cu o metodă sigură
-      - name: Autentificare Docker
+      - name: docker login
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
       # Construiește imaginea Docker
       - name: Construiește Imaginea Docker
         run: |
           TAG="v1.0.${{ github.run_number }}"
+          docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/openvpn-as:latest
           docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/openvpn-as:${TAG}
-
       # Publică imaginea Docker pe repository
       - name: Publică Docker
         run: |
           TAG="v1.0.${{ github.run_number }}"
           docker push ${{ secrets.DOCKER_USERNAME }}/openvpn-as:${TAG}
-          docker push ${{ secrets.DOCKER_USERNAME }}/openvpn-as:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/openvpn-as:latest    
