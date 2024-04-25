@@ -24,18 +24,32 @@ env:
 
 jobs:
   build:
-
+    needs: determine_version
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
 
+      - name: Determine next version
+        id: semver
+        uses: paologallina/semver-release-action@v1.2.2
+        with:
+          default: patch  # Poți ajusta tipul implicit de incrementare
+
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.2
+
+      - name: Determine next version
+        id: semver
+        uses: paologallina/semver-release-action@v1.2.2
+        with:
+          default: patch  # Poți ajusta tipul implicit de incrementare
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -77,10 +91,16 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: tags: "ghcr.io/${{ github.repository }}/${{ steps.semver.outputs.next_version }}"
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Push tag to GitHub
+        run: |
+          git tag ${{ steps.semver.outputs.next_version }}
+          git push origin ${{ steps.semver.outputs.next_version }}
+
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -91,7 +111,7 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         env:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-          TAGS: ${{ steps.meta.outputs.tags }}
+          TAGS: ${{ steps.semver.outputs.next_version }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
