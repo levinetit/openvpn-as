@@ -26,7 +26,6 @@ jobs:
   build:
     needs: determine_version
     runs-on: ubuntu-latest
-    permissions:
       contents: read
       packages: write
       
