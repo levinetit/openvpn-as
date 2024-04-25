@@ -23,7 +23,7 @@ jobs:
 
       - name: Determine next version
         id: semver
-        uses: huggingface/semver-release-action@v1.2.2
+        uses: huggingface/semver-release-action@v1.0.1
         with:
           default: patch  # Poți ajusta tipul implicit de incrementare
 
