@@ -23,10 +23,10 @@ jobs:
 
       - name: Determine next version
         uses: Decathlon/release-notes-generator-action@v3.1.6
-        with:
-          default: patch
-          tag_prefix: 'v'
-          tag_source: 'refs/tags'
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         OUTPUT_FOLDER: temp_release_notes
+         USE_MILESTONE_TITLE: "true"
 
       - name: Install cosign
         if: github.event_name != 'pull_request'
