@@ -1,9 +1,7 @@
 name: Auto Release
 
 on:
-  push:
-    branches:
-      - master  # Replace with your actual branch name
+  push:  # Consider changing to 'push: { tags: [ 'your-tag-pattern' ] }' for tag-based triggers
 
 jobs:
   create_release:
@@ -11,6 +9,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      # Create a tag (if not using tag-based triggers)
+      - name: Create Tag (Optional)
+        run: |
+          git tag -a ${{ github.sha }}  # Replace with your desired tag name if needed
+          git push origin ${{ github.sha }}  # Push the tag
 
       # Get information about branch and commit
       - name: Get the Commit Information
@@ -21,10 +25,10 @@ jobs:
 
       # Create a Release (Optional Draft)
       - name: Create a Release (using Node.js 20)
-        uses: actions/create-release@v1.1.4  # Official GitHub action, compatible with Node.js 20
+        uses: actions/create-release@v1.1.4
         with:
-          tag_name: "v1.${{ github.run_number }}"  # Consider semantic versioning for real-world scenarios
-          release_name: "Release v1.${{ github.run_number }}"  # Consider semantic versioning
+          tag_name: ${{ github.sha }}  # Use the created tag or adjust based on your logic
+          release_name: "Release v${{ github.sha }}"  # Consider semantic versioning
           body: |
             Commit: ${{ env.COMMIT_HASH }}
             Message: ${{ env.COMMIT_MESSAGE }}
