@@ -44,6 +44,7 @@ RUN \
 	mysql-common \
 	net-tools \
 	python3 \
+ 	python3-pip \
 	python3-decorator \
 	python3-ldap3 \
 	python3-migrate \
