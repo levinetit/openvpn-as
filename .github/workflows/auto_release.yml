@@ -25,7 +25,7 @@ jobs:
       - name: Create a Release (using Node.js 20)
         uses: actions/create-release@v1.1.4
         with:
-          tag_name: ${{ github.sha }}  # Use the created tag or adjust based on your logic
+          tag_name: v1.0.${{ env.BUILD_NUMBER }}  # Use the created tag or adjust based on your logic
           release_name: "Release v1.0.${{ env.BUILD_NUMBER }}"  # Consider semantic versioning
           body: |
             Commit: ${{ env.COMMIT_HASH }}
