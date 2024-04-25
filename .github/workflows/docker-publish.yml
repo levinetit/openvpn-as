@@ -4,10 +4,10 @@ on:
   schedule:
     - cron: '37 3 * * *'
   push:
-    branches: [ "master" ]
-    tags: [ 'v*.*.*' ]  # Trigger pentru versiuni semantice
+    branches: ["master"]
+    tags: ['v*.*.*']  # Trigger pentru versiuni semantice
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   REGISTRY: ghcr.io
@@ -28,7 +28,7 @@ jobs:
 
       - name: Extrage numărul de build
         id: build_number
-        run: echo "::set-output name=number::${{ github.run_number }}"
+        run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Install cosign
         if: github.event_name != 'pull_request'
@@ -53,7 +53,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            v1.0.${{ steps.build_number.outputs.number }}
+            v1.0.${{ env.BUILD_NUMBER }}
             latest  # Tag suplimentar pentru comoditate
 
       - name: Build and push Docker image
@@ -63,10 +63,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha, mode=max
 
       - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request' }}
+        if: github.event_name != 'pull_request'
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-push-action.outputs.digest }}
