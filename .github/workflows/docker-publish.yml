@@ -69,7 +69,9 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.0.${{ env.BUILD_NUMBER }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.0.${{ env.BUILD_NUMBER }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -77,6 +79,6 @@ jobs:
       - name: Sign the Docker image
         if: github.event_name != 'pull_request'
         run: |
-          echo "TAGS=${{ steps.meta.outputs.tags }}" >> $GITHUB_ENV
+          echo "TAGS=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.0.${{ env.BUILD_NUMBER }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_ENV
           echo "DIGEST=${{ steps.build-push-action.outputs.digest }}" >> $GITHUB_ENV
           echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
