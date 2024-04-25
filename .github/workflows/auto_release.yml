@@ -20,16 +20,15 @@ jobs:
           echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       # Create a Release (Optional Draft)
-      - name: Create a Release
-        uses: softprops/action-gh-release@v1
+      - name: Create a Release (using Node.js 20)
+        uses: actions/create-release@v4  # Official GitHub action, compatible with Node.js 20
         with:
-          # You can use semantic versioning or integrate with your codebase here
-          tag_name: "v1.${{ github.run_number }}"  # Update versioning as needed
-          release_name: "Release v1.${{ github.run_number }}"  # Update versioning as needed
+          tag_name: "v1.${{ github.run_number }}"  # Consider semantic versioning for real-world scenarios
+          release_name: "Release v1.${{ github.run_number }}"  # Consider semantic versioning
           body: |
             Commit: ${{ env.COMMIT_HASH }}
             Message: ${{ env.COMMIT_MESSAGE }}
           draft: ${{ inputs.create_draft_release || false }}  # Optional draft release
-          prerelease: false
+          prerelease: false  # Change to true if releasing a pre-release version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
