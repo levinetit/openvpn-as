@@ -1,36 +1,24 @@
-name: Auto Release
+name: Create release
 
 on:
-  push:  # Consider changing to 'push: { tags: [ 'your-tag-pattern' ] }' for tag-based triggers
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
 
 jobs:
-  create_release:
-    runs-on: ubuntu-latest
+  release:
+    name: Release pushed tag
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      # Create a tag (if not using tag-based triggers)
-      - name: Create Tag (Optional)
-        run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
-
-      # Get information about branch and commit
-      - name: Get the Commit Information
-        id: commit_info
-        run: |
-          echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
-          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-      # Create a Release (Optional Draft)
-      - name: Create a Release (using Node.js 20)
-        uses: actions/create-release@v1.1.4
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Commit: ${{ env.COMMIT_HASH }}
-            Message: ${{ env.COMMIT_MESSAGE }}
-          draft: ${{ inputs.create_draft_release || false }}  # Optional draft release
-          prerelease: false  # Change to true if releasing a pre-release version
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --generate-notes
