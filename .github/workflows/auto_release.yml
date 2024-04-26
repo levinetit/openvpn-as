@@ -1,24 +1,13 @@
-name: Create release
-
+name: create release-please
 on:
   push:
-    tags:
-      - v*
-
-permissions:
-  contents: write
-
+    branches:
+      - master
 jobs:
-  release:
-    name: Release pushed tag
-    runs-on: ubuntu-22.04
+  release-please:
+    runs-on: ubuntu-latest
     steps:
-      - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
-        run: |
-          gh release create "$tag" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
-              --generate-notes
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: terraform-module # Multiple release types are supported
+          default-branch: master
