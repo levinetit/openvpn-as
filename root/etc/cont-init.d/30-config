@@ -10,7 +10,7 @@ fi
 
 # Afișează parola inițială generată pentru OpenVPN-AS
 echo "Vă rugăm să vă autentificați cu parola inițială generată.
-echo Asigurați-vă că o schimbați ulterior. Dacă ați schimbat deja parola, vă rugăm să ignorați acest mesaj."
+Asigurați-vă că o schimbați ulterior. Dacă ați schimbat deja parola, vă rugăm să ignorați acest mesaj."
 grep -i 'password.$' /usr/local/openvpn_as/init.log
 
 # Verifică existența fișierului de versiune și instalează/actualizează OpenVPN-AS
@@ -22,9 +22,9 @@ if [ -f /version.txt ]; then
 		echo "Se instalează OpenVPN-AS pentru prima dată"
 		apt-get update && \
 		apt-get install -y \
-			openvpn-as=$OPENVPNAS_VERSION
+			openvpn-as="$OPENVPNAS_VERSION"
 		echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
-		kill `cat /var/run/openvpnas.pid`
+		kill "$(cat /var/run/openvpnas.pid)"
 		rm /version.txt
 		sed -i \
 			-e 's#=openvpn_as#=abc#g' \
@@ -44,12 +44,14 @@ if [ -f /version.txt ]; then
 		echo "Se face backup pentru as.conf"
 		cp /config/etc/as.conf /config/backup/as.conf
 		cd /config || exit
-		rm -rf !("backup"|"log"|"custom-cont-init.d"|"custom-services.d")
+		shopt -s extglob
+		rm -rf !(backup|log|custom-cont-init.d|custom-services.d)
+		shopt -u extglob
 		apt-get update && \
 		apt-get install -y \
-			openvpn-as=$OPENVPNAS_VERSION
+			openvpn-as="$OPENVPNAS_VERSION"
 		echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
-		kill `cat /var/run/openvpnas.pid`
+		kill "$(cat /var/run/openvpnas.pid)"
 		rm /version.txt
 		sed -i \
 			-e 's#=openvpn_as#=abc#g' \
@@ -62,7 +64,7 @@ if [ -f /version.txt ]; then
 		do
 			echo "Se restaurează $f"
 			rm -f /config/etc/db/"$f"
-			sqlite3 </config/backup/"$f" /config/etc/db/"$f"
+			sqlite3 < /config/backup/"$f" /config/etc/db/"$f"
 		done
 		rm -f /config/etc/as.conf
 		echo "Se restaurează as.conf"
