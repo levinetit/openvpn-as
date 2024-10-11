@@ -109,7 +109,12 @@ RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn
 
 # Adăugare fișiere locale
 COPY /root / 
-
+RUN if [ ! -d /root ]; then \
+        mkdir /root; \
+    fi && \
+    chmod 700 /root && \
+    chmod -R -x /root
+    
 # Setare porturi și volume
 EXPOSE 943/tcp 1194/udp 9443/tcp
 VOLUME /config
