@@ -15,10 +15,10 @@ ARG DEBIAN_FRONTEND="noninteractive"
 RUN \
  echo "**** instalare dependențe ****" && \
  apt-get update && \
- apt-get install -y \
+ apt-get install -y --no-install-recommends \
 	bridge-utils \
- 	ca-certificates \
-    curl \  
+	ca-certificates \
+	curl \
 	file \
 	gnupg \
 	iproute2 \
@@ -64,10 +64,9 @@ RUN \
 	systemctl \
 	sqlite3 \
 	unzip \
-	wget \ 
+	wget \
 	xz-utils \
 	zip \
-	# Pachetele noi care lipsesc în codul inițial
 	dmidecode \
 	libc6 \
 	libffi7 \
@@ -92,17 +91,14 @@ RUN \
 	libnl-genl-3-200 \
 	python3-typing-extensions && \
  echo "**** instalare certificăte, wget, net-tools, gnupg ****" && \
- apt update && apt -y install ca-certificates wget net-tools gnupg && \
  wget https://as-repository.openvpn.net/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://as-repository.openvpn.net/as/debian jammy main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
- apt update && apt -y install openvpn-as openvpn-dco-dkms && \
- if [ -z ${OPENVPNAS_VERSION+x} ]; then \
-	OPENVPNAS_VERSION=$(curl -sX GET http://as-repository.openvpn.net/as/debian/dists/jammy/main/binary-amd64/Packages.gz | gunzip -c \
-	| grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}'); \
+ apt-get update && apt-get -y install openvpn-as openvpn-dco-dkms && \
+ if [ -z "${OPENVPNAS_VERSION+x}" ]; then \
+	OPENVPNAS_VERSION=$(curl -sX GET http://as-repository.openvpn.net/as/debian/dists/jammy/main/binary-amd64/Packages.gz | gunzip -c | grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}'); \
  fi && \
  echo "$OPENVPNAS_VERSION" > /version.txt && \
- rm -rf \
-	/tmp/*
+ rm -rf /tmp/*
 
 # Copiază fișierul în directorul de lucru al containerului Docker
 COPY pyovpn-2.0-py3.10.egg /tmp/
@@ -112,7 +108,7 @@ RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn
     cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
 
 # Adăugare fișiere locale
-COPY /root /
+COPY /root / 
 
 # Setare porturi și volume
 EXPOSE 943/tcp 1194/udp 9443/tcp
