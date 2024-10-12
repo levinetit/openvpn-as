@@ -1,5 +1,6 @@
 #!/usr/bin/with-contenv bash
 set -e  # Oprește scriptul la prima eroare
+set -x  # Activează modul de depanare
 
 # Crează directoarele necesare
 mkdir -p /openvpn/{pid,sock,tmp} /dev/net /config/log /config/etc/tmp || { echo "Eșec la crearea directoarelor"; exit 1; }
@@ -100,4 +101,5 @@ rm -rf /openvpn/pid/*
 # Setează permisiunile adecvate
 chown abc:abc /config/log /config/etc/tmp
 chmod -R 755 /openvpn
-chmod 600 /config/etc/as.conf  # Setează permisiuni stricte pentru as.conf
+chmod 600 /config/etc/as.conf  
+# Setează permisiuni stricte pentru as.conf
