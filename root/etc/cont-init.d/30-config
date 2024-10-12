@@ -101,5 +101,5 @@ rm -rf /openvpn/pid/*
 # Setează permisiunile adecvate
 chown abc:abc /config/log /config/etc/tmp
 chmod -R 755 /openvpn
-chmod 600 /config/etc/as.conf  
+chmod 600 /config/etc/as.conf
 # Setează permisiuni stricte pentru as.conf
