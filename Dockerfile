@@ -32,14 +32,13 @@ RUN \
 	libmagic1 \
 	libmariadb3 \
 	libmnl0 \
-	libmpdec3 \
 	libmysqlclient21 \
 	libnetfilter-conntrack3 \
 	libnfnetlink0 \
 	libpcap0.8 \
 	libpython3-stdlib \
-	libpython3.10-minimal \
-	libpython3.10-stdlib \
+	libpython3.11-minimal \
+	libpython3.11-stdlib \
 	libxtables12 \
 	mime-support \
 	binutils-multiarch \
@@ -59,8 +58,8 @@ RUN \
 	python3-sqlalchemy \
 	python3-sqlparse \
 	python3-tempita \
-	python3.10 \
-	python3.10-minimal \
+	python3.11 \
+	python3.11-minimal \
 	systemctl \
 	sqlite3 \
 	unzip \
@@ -69,7 +68,7 @@ RUN \
 	zip \
 	dmidecode \
 	libc6 \
-	libffi7 \
+	libffi8 \
 	libgcc-s1 \
 	liblz4-1 \
 	libssl3 \
