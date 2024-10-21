@@ -37,8 +37,8 @@ RUN \
 	libnfnetlink0 \
 	libpcap0.8 \
 	libpython3-stdlib \
-	libpython3.11-minimal \
-	libpython3.11-stdlib \
+	libpython3.12-minimal \
+	libpython3.12-stdlib \
 	libxtables12 \
 	mime-support \
 	binutils-multiarch \
@@ -58,8 +58,8 @@ RUN \
 	python3-sqlalchemy \
 	python3-sqlparse \
 	python3-tempita \
-	python3.11 \
-	python3.11-minimal \
+	python3.12 \
+	python3.12-minimal \
 	systemctl \
 	sqlite3 \
 	unzip \
