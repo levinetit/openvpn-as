@@ -26,7 +26,6 @@ RUN \
 	libatm1 \
 	libelf1 \
 	libexpat1 \
-	libiptc0 \
 	liblzo2-2 \
 	libmagic-mgc \
 	libmagic1 \
@@ -40,7 +39,7 @@ RUN \
 	libpython3.12-minimal \
 	libpython3.12-stdlib \
 	libxtables12 \
-	mime-support \
+ 	mailcap \
 	binutils-multiarch \
 	mysql-common \
 	net-tools \
