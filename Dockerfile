@@ -91,11 +91,11 @@ RUN \
     libnl-genl-3-200 \
     python3-typing-extensions && \
   echo "**** instalare certificăte, wget, net-tools, gnupg ****" && \
-  wget https://as-repository.openvpn.net/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
-  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://as-repository.openvpn.net/as/debian noble main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
+  wget http://packages.openvpn.net/as/debian/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
+  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://packages.openvpn.net/as/debian noble main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
   apt-get update && apt-get -y install openvpn-as openvpn-dco-dkms && \
   if [ -z "${OPENVPNAS_VERSION+x}" ]; then \
-    OPENVPNAS_VERSION=$(curl -sX GET http://as-repository.openvpn.net/as/debian/dists/noble/main/binary-amd64/Packages.gz | gunzip -c | grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}'); \
+    OPENVPNAS_VERSION=$(curl -sX GET http://packages.openvpn.net/as/debian | gunzip -c | grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}'); \
   fi && \
   echo "$OPENVPNAS_VERSION" > /version.txt && \
   apt-get clean && \
