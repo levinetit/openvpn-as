@@ -112,7 +112,8 @@ RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn
 COPY /root /
 
 # Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
-RUN chmod -R +x /etc/cont-init.d/*
+RUN chmod -R +x /etc/cont-init.d/* && \
+    chmod -R +x /etc/services.d/*
 
 # Upgrade de la Ubuntu Jammy (22.04) la Noble (24.04)
 #RUN sed -i 's/jammy/noble/g' /etc/apt/sources.list && \
