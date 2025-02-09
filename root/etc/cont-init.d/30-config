@@ -14,7 +14,7 @@ fi
 
 # Afișează parola inițială generată pentru OpenVPN-AS
 if [ -f /usr/local/openvpn_as/init.log ]; then
-  grep -i 'password.$' /usr/local/openvpn_as/init.log || echo "Fișierul init.log nu conține informații despre parolă."
+  grep -i 'password\.$' /usr/local/openvpn_as/init.log || echo "Fișierul init.log nu conține informații despre parolă."
 else
   echo "Fișierul init.log nu a fost găsit."
 fi
@@ -22,7 +22,7 @@ fi
 # Verifică existența fișierului de versiune și instalează/actualizează OpenVPN-AS
 if [ -f /version.txt ]; then
   OPENVPNAS_VERSION=$(cat /version.txt)
-  rm -rf /usr/local/openvpn_as || echo "Nu există un director /usr/local/openvpn_as, se continuă instalarea."
+  rm -rf /usr/local/openvpn_as  # Nu mai folosim || echo "..."
   ln -s /config /usr/local/openvpn_as
 
   if [ ! -f /config/etc/as.conf ]; then
@@ -32,12 +32,10 @@ if [ -f /version.txt ]; then
 
     echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
     if [ -f /var/run/openvpnas.pid ]; then
-      kill "$(cat /var/run/openvpnas.pid)" || echo "Eroare la oprirea OpenVPN-AS."
-    else
-      echo "Fișierul PID nu a fost găsit, OpenVPN-AS poate să nu ruleze."
+      kill "$(cat /var/run/openvpnas.pid)" 2>/dev/null || pkill -f openvpnas || echo "Eroare la oprirea OpenVPN-AS."
     fi
     
-    rm /version.txt
+    rm -f /version.txt
   else
     echo "Date existente găsite, se reinstalează OpenVPN-AS"
     mkdir -p /config/backup
@@ -48,7 +46,7 @@ if [ -f /version.txt ]; then
     done
 
     echo "Se face backup pentru as.conf"
-    cp /config/etc/as.conf /config/backup/as.conf || echo "Backup-ul pentru as.conf a eșuat."
+    [ -f /config/etc/as.conf ] && cp /config/etc/as.conf /config/backup/as.conf || echo "Backup-ul pentru as.conf a eșuat."
 
     cd /config || { echo "Eșec la navigarea în /config"; exit 1; }
     shopt -s extglob
@@ -60,10 +58,10 @@ if [ -f /version.txt ]; then
 
     echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
     if [ -f /var/run/openvpnas.pid ]; then
-      kill "$(cat /var/run/openvpnas.pid)" || echo "Eroare la oprirea OpenVPN-AS."
+      kill "$(cat /var/run/openvpnas.pid)" 2>/dev/null || pkill -f openvpnas || echo "Eroare la oprirea OpenVPN-AS."
     fi
     
-    rm /version.txt
+    rm -f /version.txt
 
     cd /config/backup || { echo "Eșec la navigarea în /config/backup"; exit 1; }
     for f in *.db; do
@@ -71,7 +69,7 @@ if [ -f /version.txt ]; then
     done
 
     rm -f /config/etc/as.conf
-    cp /config/backup/as.conf /config/etc/as.conf || echo "Restaurarea as.conf a eșuat."
+    [ -f /config/backup/as.conf ] && cp /config/backup/as.conf /config/etc/as.conf || echo "Restaurarea as.conf a eșuat."
     rm -rf /config/backup
   fi
 fi
@@ -81,6 +79,6 @@ rm -rf /openvpn/sock/*
 rm -rf /openvpn/pid/*
 
 # Setează permisiunile adecvate
-chown abc:abc /config/log /config/etc/tmp
+chown net:net /config/log /config/etc/tmp
 chmod -R 755 /openvpn
 chmod 600 /config/etc/as.conf
