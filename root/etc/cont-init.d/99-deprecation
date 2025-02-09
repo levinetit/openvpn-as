@@ -15,7 +15,7 @@ echo '
 
 We recommend our wireguard image instead for vpn:
 https://github.com/linuxserver/docker-wireguard
-
+https://github.com/levinetit/openvpn-as
 
 ******************************************************
 ******************************************************'
