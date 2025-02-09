@@ -101,6 +101,9 @@ RUN \
   apt-get clean && \
   rm -rf /tmp/*
 
+# Creează directorul /usr/local/openvpn_as/scripts/ dacă nu există
+RUN mkdir -p /usr/local/openvpn_as/scripts/
+
 # Copiază fișierul în directorul de lucru al containerului Docker
 COPY pyovpn-2.0-py3.10.egg /tmp/
 
@@ -122,5 +125,5 @@ RUN chmod -R +x /etc/cont-init.d/* && \
     systemctl start openvpnas
 
 # Setare porturi și volume
-EXPOSE 943/tcp 1195/udp 11963/tcp
+EXPOSE 943/tcp 1195/udp 1196/tcp
 VOLUME /config
