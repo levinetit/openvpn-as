@@ -11,4 +11,4 @@ jobs:
       - uses: google-github-actions/release-please-action@v4.1.0
         with:
           release-type: terraform-module # Specifică tipul de proiect, poate fi 'node', 'python', etc.
-          token: ${{ secrets.GITHUB_TOKEN }} # Tokenul GitHub pentru permisiuni
+          token: ${{ secrets.GHCR_TOKEN }} # Tokenul GitHub pentru permisiuni
