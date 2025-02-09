@@ -12,10 +12,9 @@ LABEL maintainer="levinetit"
 ARG DEBIAN_FRONTEND="noninteractive"
 
 # Instalarea pachetelor, inclusiv cele noi
-RUN \
-  echo "**** instalare dependențe ****" && \
-  apt-get update && \
-  apt-get install -y --no-install-recommends \
+RUN echo "**** instalare dependențe ****" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
     bridge-utils \
     ca-certificates \
     curl \
@@ -90,16 +89,16 @@ RUN \
     libnl-3-200 \
     libnl-genl-3-200 \
     python3-typing-extensions && \
-  echo "**** instalare certificăte, wget, net-tools, gnupg ****" && \
-  wget http://packages.openvpn.net/as/debian/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
-  echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://packages.openvpn.net/as/debian noble main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
-  apt-get update && apt-get -y install openvpn-as openvpn-dco-dkms && \
-  if [ -z "${OPENVPNAS_VERSION+x}" ]; then \
+    echo "**** instalare certificat, wget, net-tools, gnupg ****" && \
+    wget http://packages.openvpn.net/as/debian/as-repo-public.asc -qO /etc/apt/trusted.gpg.d/as-repository.asc && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://packages.openvpn.net/as/debian noble main" > /etc/apt/sources.list.d/openvpn-as-repo.list && \
+    apt-get update && apt-get -y install openvpn-as openvpn-dco-dkms && \
+    if [ -z "${OPENVPNAS_VERSION+x}" ]; then \
     OPENVPNAS_VERSION=$(curl -sX GET http://packages.openvpn.net/as/debian | gunzip -c | grep -A 7 -m 1 "Package: openvpn-as" | awk -F ": " '/Version/{print $2;exit}'); \
-  fi && \
-  echo "$OPENVPNAS_VERSION" > /version.txt && \
-  apt-get clean && \
-  rm -rf /tmp/*
+    fi && \
+    echo "$OPENVPNAS_VERSION" > /version.txt && \
+    apt-get clean && \
+    rm -rf /tmp/*
 
 # Copiază fișierul în directorul de lucru al containerului Docker
 COPY pyovpn-2.0-py3.10.egg /tmp/
@@ -108,7 +107,7 @@ COPY pyovpn-2.0-py3.10.egg /tmp/
 RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
     cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
 
-# Adăugare fișiere locale (adăugați doar fișierele necesare, nu întregul director /root)
+# Adăugare fișiere locale
 COPY /root / 
 
 # Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
