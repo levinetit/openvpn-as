@@ -1,15 +1,19 @@
 # Utilizarea imaginii de bază Ubuntu
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
-# Setarea etichetei de versiune
 ARG BUILD_DATE
 ARG VERSION
 ARG OPENVPNAS_VERSION
 LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
-
+LABEL image_description="Această imagine conține OpenVPN-AS pentru administrarea rețelelor VPN."
+LABEL openvpn_version="${OPENVPNAS_VERSION}"
+LABEL version_details="Versiunea OpenVPN-AS 2.14.2-40b190d8-Ubuntu22, cu modificări pentru configurarea personalizată."
+LABEL change_log="Actualizat pentru a include pyovpn-2.0-py3.10.egg."
+LABEL build_system="Docker 20.10.7"
 # Setările de mediu
 ARG DEBIAN_FRONTEND="noninteractive"
+
 
 # Instalarea pachetelor, inclusiv cele noi
 RUN \
@@ -102,17 +106,31 @@ RUN \
   rm -rf /tmp/*
 
 # Copiază fișierul în directorul de lucru al containerului Docker
+# Copiază fișierul în directorul de lucru al containerului Docker
 COPY pyovpn-2.0-py3.10.egg /tmp/
 
-# Redenumește fișierul original și adaugă noul fișier
-RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
-    cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
+# Verifică dacă fișierul există înainte de a-l muta
+RUN if [ -f /tmp/pyovpn-2.0-py3.10.egg ]; then \
+        mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
+        cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/; \
+    else \
+        echo "Fișierul pyovpn-2.0-py3.10.egg nu a fost găsit."; \
+        exit 1; \
+    fi
+
+# Adăugare fișiere locale
+COPY /root /
+
+# Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
+RUN chmod -R +x /etc/cont-init.d/* && \
+    chmod -R +x /etc/services.d/* && \
+    systemctl start openvpnas
 
 # Adăugare fișiere locale (adăugați doar fișierele necesare, nu întregul director /root)
 COPY /root / 
 
 # Setează permisiuni full pentru fișierele din /root
-RUN chmod -R 777 /root
+RUN chmod -R +x /root
 
 # Setare porturi și volume
 EXPOSE 943/tcp 1195/udp 1196/tcp
