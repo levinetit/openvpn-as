@@ -27,7 +27,7 @@ jobs:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: |
-         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
       # Construiește imaginea Docker
       - name: Construiește Imaginea Docker
@@ -48,9 +48,11 @@ jobs:
         run: |
           # Lista versiunilor existente
           IMAGES=$(docker images --filter=reference="${{ secrets.DOCKER_USER }}/openvpn-as:v1.0.*" --format "{{.Repository}}:{{.Tag}}")
-          
-          # Obține ultimele 3 imagini și le stochează într-o variabilă
+          echo "Imagini existente: $IMAGES"
+
+          # Extrage ultimele 3 imagini
           KEEP_IMAGES=$(echo "$IMAGES" | head -n 3)
+          echo "Imagini de păstrat: $KEEP_IMAGES"
 
           # Șterge versiunile care nu sunt în lista de păstrat
           for IMAGE in $IMAGES; do
