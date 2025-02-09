@@ -42,3 +42,20 @@ jobs:
           TAG="v1.0.${{ github.run_number }}"
           docker push "${{ secrets.DOCKER_USER }}/openvpn-as:${TAG}"
           docker push "${{ secrets.DOCKER_USER }}/openvpn-as:latest"
+
+      # Șterge versiunile mai vechi, păstrând doar ultimele 3
+      - name: Șterge versiunile mai vechi
+        run: |
+          # Lista versiunilor existente
+          IMAGES=$(docker images --filter=reference="${{ secrets.DOCKER_USER }}/openvpn-as:v1.0.*" --format "{{.Repository}}:{{.Tag}}")
+          
+          # Obține ultimele 3 imagini și le stochează într-o variabilă
+          KEEP_IMAGES=$(echo "$IMAGES" | head -n 3)
+
+          # Șterge versiunile care nu sunt în lista de păstrat
+          for IMAGE in $IMAGES; do
+            if ! echo "$KEEP_IMAGES" | grep -q "$IMAGE"; then
+              echo "Ștergere imagine: $IMAGE"
+              docker rmi "$IMAGE" || true
+            fi
+          done
