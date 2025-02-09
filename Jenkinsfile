@@ -17,10 +17,10 @@ pipeline {
     GITLAB_TOKEN=credentials('b6f0f1dd-6952-4cf6-95d1-9c06380283f0')
     GITLAB_NAMESPACE=credentials('gitlab-namespace-id')
     BUILD_VERSION_ARG = 'OPENVPNAS_VERSION'
-    LS_USER = 'linuxserver'
+    LS_USER = 'levinetit'
     LS_REPO = 'docker-openvpn-as'
     CONTAINER_NAME = 'openvpn-as'
-    DOCKERHUB_IMAGE = 'linuxserver/openvpn-as'
+    DOCKERHUB_IMAGE = 'levinetit/openvpn-as'
     DEV_DOCKERHUB_IMAGE = 'lsiodev/openvpn-as'
     PR_DOCKERHUB_IMAGE = 'lspipepr/openvpn-as'
     DIST_IMAGE = 'ubuntu'
@@ -103,7 +103,7 @@ pipeline {
       steps{
         script{
           env.EXT_RELEASE = sh(
-            script: ''' curl -sX GET http://as-repository.openvpn.net/as/debian/dists/bionic/main/binary-amd64/Packages.gz | gunzip -c |grep -A 7 -m 1 'Package: openvpn-as' | awk -F ': ' '/Version/{print $2;exit}' ''',
+            script: ''' curl -sX GET http://as-repository.openvpn.net/as/debian/dists/noble/main/binary-amd64/Packages.gz | gunzip -c |grep -A 7 -m 1 'Package: openvpn-as' | awk -F ': ' '/Version/{print $2;exit}' ''',
             returnStdout: true).trim()
             env.RELEASE_LINK = 'custom_command'
         }
