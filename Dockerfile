@@ -123,5 +123,5 @@ RUN chmod -R +x /etc/cont-init.d/* && \
 #    apt-get clean
 
 # Setare porturi și volume
-EXPOSE 943/tcp 1194/udp 9443/tcp
+EXPOSE 943/tcp 1195/udp 11963/tcp
 VOLUME /config
