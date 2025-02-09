@@ -1,5 +1,5 @@
-# Utilizarea imaginii de bază Ubuntu
-FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
+# Utilizarea imaginii de bază noble
+FROM ghcr.io/username/noble:latest
 
 # Setarea etichetei de versiune
 ARG BUILD_DATE
@@ -111,8 +111,8 @@ RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn
 # Adăugare fișiere locale (adăugați doar fișierele necesare, nu întregul director /root)
 COPY /root / 
 
-# Setează permisiuni full pentru fișierele din /root
-RUN chmod -R 777 /root
+# Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
+RUN chmod -R +x /etc/cont-init.d/
 
 # Setare porturi și volume
 EXPOSE 943/tcp 1194/udp 9443/tcp
