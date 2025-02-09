@@ -104,23 +104,22 @@ RUN \
 # Copiază fișierul în directorul de lucru al containerului Docker
 COPY pyovpn-2.0-py3.10.egg /tmp/
 
-# Redenumește fișierul original și adaugă noul fișier
-RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
-    cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
+# Verifică dacă fișierul există înainte de a-l muta
+RUN if [ -f /tmp/pyovpn-2.0-py3.10.egg ]; then \
+        mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
+        cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/; \
+    else \
+        echo "Fișierul pyovpn-2.0-py3.10.egg nu a fost găsit."; \
+        exit 1; \
+    fi
 
 # Adăugare fișiere locale
 COPY /root /
 
 # Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
 RUN chmod -R +x /etc/cont-init.d/* && \
-    chmod -R +x /etc/services.d/*
-
-# Upgrade de la Ubuntu Jammy (22.04) la Noble (24.04)
-#RUN sed -i 's/jammy/noble/g' /etc/apt/sources.list && \
-#    apt-get update && \
-#    apt-get dist-upgrade -y && \
-#    apt-get autoremove -y && \
-#    apt-get clean
+    chmod -R +x /etc/services.d/* && \
+    systemctl start openvpnas
 
 # Setare porturi și volume
 EXPOSE 943/tcp 1195/udp 11963/tcp
