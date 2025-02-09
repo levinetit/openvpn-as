@@ -7,7 +7,11 @@ ARG VERSION
 ARG OPENVPNAS_VERSION
 LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
-
+LABEL image_description="Această imagine conține OpenVPN-AS pentru administrarea rețelelor VPN."
+LABEL openvpn_version="${OPENVPNAS_VERSION}"
+LABEL version_details="Versiunea OpenVPN-AS 2.14.2-40b190d8-Ubuntu22, cu modificări pentru configurarea personalizată."
+LABEL change_log="Actualizat pentru a include pyovpn-2.0-py3.10.egg."
+LABEL build_system="Docker 20.10.7"
 # Setările de mediu
 ARG DEBIAN_FRONTEND="noninteractive"
 
@@ -101,8 +105,8 @@ RUN \
   apt-get clean && \
   rm -rf /tmp/*
 
-# Creează directorul /usr/local/openvpn_as/scripts/ dacă nu există
-RUN mkdir -p /usr/local/openvpn_as/scripts/
+# Reinstalează openvpn-as pentru a recrea directorul /usr/local/openvpn_as/scripts/
+RUN apt-get reinstall -y openvpn-as
 
 # Copiază fișierul în directorul de lucru al containerului Docker
 COPY pyovpn-2.0-py3.10.egg /tmp/
@@ -125,5 +129,5 @@ RUN chmod -R +x /etc/cont-init.d/* && \
     systemctl start openvpnas
 
 # Setare porturi și volume
-EXPOSE 943/tcp 1195/udp 1196/tcp
+EXPOSE 943/tcp 1195/udp 11963/tcp
 VOLUME /config
