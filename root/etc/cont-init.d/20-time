@@ -5,7 +5,7 @@ then
 	if [ -d "/usr/share/zoneinfo/${TZ}" ] || \
 	[ ! -e "/usr/share/zoneinfo/${TZ}" ] || \
 	[ -z "${TZ}" ]
-	then TZ="Etc/UTC"
+	then TZ="Europe/Bucharest"
 	fi
 ln -fs "/usr/share/zoneinfo/${TZ}" /etc/localtime
 exec  dpkg-reconfigure -f noninteractive tzdata
