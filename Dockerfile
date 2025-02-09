@@ -1,5 +1,5 @@
 # Utilizarea imaginii de bază noble
-FROM ghcr.io/linuxserver/baseimage-ubuntu/noble
+FROM ghcr.io/linuxserver/baseimage-ubuntu:noble
 
 # Setarea etichetei de versiune
 ARG BUILD_DATE
