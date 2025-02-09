@@ -1,4 +1,4 @@
-# Utilizarea imaginii de bază noble
+# Utilizarea imaginii de bază Ubuntu Jammy
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
 # Setarea etichetei de versiune
@@ -108,11 +108,18 @@ COPY pyovpn-2.0-py3.10.egg /tmp/
 RUN mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
     cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/
 
-# Adăugare fișiere locale (adăugați doar fișierele necesare, nu întregul director /root)
-COPY /root / 
+# Adăugare fișiere locale
+COPY /root /
 
 # Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
 RUN chmod -R +x /etc/cont-init.d/
+
+# Upgrade de la Ubuntu Jammy (22.04) la Noble (24.04)
+RUN sed -i 's/jammy/noble/g' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get dist-upgrade -y && \
+    apt-get autoremove -y && \
+    apt-get clean
 
 # Setare porturi și volume
 EXPOSE 943/tcp 1194/udp 9443/tcp
