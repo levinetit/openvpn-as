@@ -8,7 +8,7 @@ LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
 LABEL image_description="Această imagine conține OpenVPN-AS pentru administrarea rețelelor VPN."
 LABEL openvpn_version="${OPENVPNAS_VERSION}"
-LABEL version_details="Versiunea OpenVPN-AS 2.14.2, cu modificări pentru configurarea personalizată."
+LABEL version_details="Versiunea OpenVPN-AS 3.0.0, cu modificări pentru configurarea personalizată."
 LABEL change_log="Actualizat pentru a include pyovpn-2.0-py3.10.egg."
 LABEL build_system="Docker 20.10.7"
 # Setările de mediu
