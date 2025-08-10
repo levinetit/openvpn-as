@@ -130,7 +130,7 @@ RUN chmod -R +x /etc/cont-init.d/* && \
 COPY /root / 
 
 # Setează permisiuni full pentru fișierele din /root
-RUN chmod -R +x /root
+# RUN chmod -R +x /root
 
 # Setare porturi și volume
 EXPOSE 943/tcp 1195/udp 1196/tcp
