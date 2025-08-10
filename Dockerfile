@@ -110,21 +110,21 @@ RUN \
 COPY pyovpn-2.0-py3.10.egg /tmp/
 
 # Verifică dacă fișierul există înainte de a-l muta
-RUN if [ -f /tmp/pyovpn-2.0-py3.10.egg ]; then \
-        mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
-        cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/; \
-    else \
-        echo "Fișierul pyovpn-2.0-py3.10.egg nu a fost găsit."; \
-        exit 1; \
-    fi
+#RUN if [ -f /tmp/pyovpn-2.0-py3.10.egg ]; then \
+#        mv /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg.org && \
+#        cp /tmp/pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/; \
+#    else \
+#        echo "Fișierul pyovpn-2.0-py3.10.egg nu a fost găsit."; \
+#        exit 1; \
+#    fi
 
 # Adăugare fișiere locale
 COPY /root /
 
 # Setează permisiuni de execuție pentru fișierele din /etc/cont-init.d/
-RUN chmod -R +x /etc/cont-init.d/* && \
-    chmod -R +x /etc/services.d/* && \
-    systemctl start openvpnas
+#RUN chmod -R +x /etc/cont-init.d/* && \
+#    chmod -R +x /etc/services.d/* && \
+#    systemctl start openvpnas
 
 # Adăugare fișiere locale (adăugați doar fișierele necesare, nu întregul director /root)
 COPY /root / 
