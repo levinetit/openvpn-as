@@ -1,6 +1,14 @@
 .git
 .gitignore
-.github
 .gitattributes
-READMETEMPLATE.md
+.github
 README.md
+READMETEMPLATE.md
+egg.md
+LICENSE
+Jenkinsfile
+jenkins-vars.yml
+readme-vars.yml
+package_versiffons.txt
+*.bak
+*.md
