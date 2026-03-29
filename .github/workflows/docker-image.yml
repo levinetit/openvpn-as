@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Verificare Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Obține numărul de build și data build-ului
       - name: Obține Număr de Build și Data Build-ului

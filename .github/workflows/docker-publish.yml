@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Obține Build Number
         run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV

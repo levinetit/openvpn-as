@@ -9,7 +9,7 @@ jobs:
   external-trigger-master:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Verificare versiune nouă OpenVPN AS și trigger rebuild
         run: |
