@@ -51,9 +51,13 @@ if [ -f /version.txt ]; then
     cp /config/etc/as.conf /config/backup/as.conf || echo "Backup-ul pentru as.conf a eșuat."
 
     cd /config || { echo "Eșec la navigarea în /config"; exit 1; }
-    shopt -s extglob
-    rm -rf !(backup|log|custom-cont-init.d|custom-services.d)
-    shopt -u extglob
+    # Șterge tot din /config exceptând directoarele rezervate (compatibil cu sh/bash)
+    find /config -mindepth 1 -maxdepth 1 \
+      ! -name 'backup' \
+      ! -name 'log' \
+      ! -name 'custom-cont-init.d' \
+      ! -name 'custom-services.d' \
+      -exec rm -rf {} +
     
     apt-get update && \
     apt-get install -y openvpn-as="$OPENVPNAS_VERSION" || { echo "Reinstalarea OpenVPN-AS a eșuat"; exit 1; }
