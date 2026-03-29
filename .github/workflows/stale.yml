@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v9
+    - uses: actions/stale@v10
       with:
         stale-issue-message: "Acest issue a fost marcat automat ca inactiv deoarece nu a avut activitate recentă. Va fi închis dacă nu există activitate suplimentară."
         stale-pr-message: "Acest pull request a fost marcat automat ca inactiv deoarece nu a avut activitate recentă. Va fi închis dacă nu există activitate suplimentară."
