@@ -65,6 +65,7 @@ jobs:
 
       # Construiește și împinge imaginea Docker
       - name: Build and Push Docker image
+        id: build-push-action
         uses: docker/build-push-action@v5.3.0
         with:
           context: .
@@ -79,6 +80,6 @@ jobs:
       - name: Sign the Docker image
         if: github.event_name != 'pull_request'
         run: |
-          echo "TAGS=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.0.${{ env.BUILD_NUMBER }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_ENV
-          echo "DIGEST=${{ steps.build-push-action.outputs.digest }}" >> $GITHUB_ENV
-          echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+          TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v1.0.${{ env.BUILD_NUMBER }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          DIGEST="${{ steps.build-push-action.outputs.digest }}"
+          echo "${TAGS}" | tr ',' '\n' | xargs -I {} cosign sign --yes {}@${DIGEST}
