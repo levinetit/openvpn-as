@@ -19,8 +19,9 @@ jobs:
           fi
 
           # Obține cea mai recentă versiune din repo-ul oficial (noble = Ubuntu 24.04)
-          EXT_RELEASE=$(curl -sX GET http://as-repository.openvpn.net/as/debian/dists/noble/main/binary-amd64/Packages.gz \
-            | gunzip -c | grep -A 7 -m 1 'Package: openvpn-as' | awk -F ': ' '/Version/{print $2;exit}')
+          # -L urmărește redirectul 301; pattern ancorat cu ^ și $ pentru a nu prinde openvpn-as-bundled-clients
+          EXT_RELEASE=$(curl -sL http://as-repository.openvpn.net/as/debian/dists/noble/main/binary-amd64/Packages.gz \
+            | gunzip -c | grep -A 7 -m 1 '^Package: openvpn-as$' | awk -F ': ' '/Version/{print $2;exit}')
 
           if [ -z "${EXT_RELEASE}" ] || [ "${EXT_RELEASE}" == "null" ]; then
             echo "**** Nu s-a putut obține versiunea externă, ieșire ****"
