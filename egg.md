@@ -1,36 +1,36 @@
-# OpenVPN Access Server — crack licență (egg) pentru Python 3.14 / Ubuntu 26.04
+# OpenVPN Access Server — license egg crack for Python 3.14 / Ubuntu 26.04
 
-Versiune validată: **Ubuntu 26.04 LTS**, **OpenVPN AS 3.2.1** (`3.2.1-d0affc91-Ubuntu26`), **Python 3.14**.
+Validated on: **Ubuntu 26.04 LTS**, **OpenVPN AS 3.2.1** (`3.2.1-d0affc91-Ubuntu26`), **Python 3.14**.
 
-> Pe Ubuntu 26.04 `python3` este 3.14, iar OpenVPN AS folosește egg-ul `pyovpn-2.0-py3.14.egg`
-> + extensia compilată `pyovpnc.cpython-314-*.so`. Egg-ul vechi `py3.12` NU pornește pe 3.14
-> (`ImportError: bad magic number in 'pyovpn'`) — de aceea crack-ul se face pe egg-ul py3.14,
-> recompilând `uprop.py` cu `python3` (3.14), ca magic number-ul să se potrivească.
-> Pentru procedura veche (Ubuntu 22.04 / py3.10) vezi istoricul git.
+> On Ubuntu 26.04 `python3` is 3.14, and OpenVPN AS uses the egg `pyovpn-2.0-py3.14.egg`
+> plus the compiled extension `pyovpnc.cpython-314-*.so`. The older `py3.12` egg will NOT
+> start on 3.14 (`ImportError: bad magic number in 'pyovpn'`) — so the crack must be applied
+> to the py3.14 egg, recompiling `uprop.py` with `python3` (3.14) so the bytecode magic number
+> matches. For the legacy procedure (Ubuntu 22.04 / py3.10) see the git history.
 
-## 1. Activează IP forwarding
+## 1. Enable IP forwarding
 
 ```bash
 echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 ```
 
-## 2. Instalează / actualizează OpenVPN AS (build Ubuntu26, py3.14)
+## 2. Install / update OpenVPN AS (Ubuntu26 build, py3.14)
 
-Cel mai simplu — installerul oficial detectează Ubuntu 26.04 și instalează pachetul corect:
+The easiest way — the official installer detects Ubuntu 26.04 and installs the right package:
 
 ```bash
 bash <(curl -fsS https://packages.openvpn.net/as/install.sh) --yes
 ```
 
-Verifică versiunea instalată (trebuie `...-Ubuntu26`):
+Verify the installed version (must be `...-Ubuntu26`):
 
 ```bash
 apt-cache policy openvpn-as | grep Installed
 ls /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.14.egg
 ```
 
-## 3. Crack — limită de conexiuni nelimitată (8888)
+## 3. Crack — unlimited connection limit (8888)
 
 ```bash
 sudo apt install -y unzip zip
@@ -44,10 +44,10 @@ cp "$EGG" .
 unzip -q pyovpn-2.0-py3.14.egg -d ex
 cd ex/pyovpn/lic/
 
-# salvează implementarea originală sub alt nume
+# keep the original implementation under a different name
 mv uprop.pyc uprop2.pyc
 
-# creează wrapper-ul care suprascrie limita
+# create the wrapper that overrides the limit
 cat > uprop.py <<'PYEOF'
 from pyovpn.lic import uprop2
 old_figure = None
@@ -66,12 +66,12 @@ for x in dir(uprop2):
       exec('%s = uprop2.%s' % (x, x))
 PYEOF
 
-# IMPORTANT: compilează cu python3 = 3.14 (magic number corect pentru egg-ul py3.14)
+# IMPORTANT: compile with python3 = 3.14 (correct magic number for the py3.14 egg)
 python3 -O -m compileall -q uprop.py
 mv __pycache__/uprop.*.pyc uprop.pyc
 rm -rf __pycache__
 
-# re-împachetează egg-ul
+# repackage the egg
 cd /home/temp/ex
 sudo rm -f "$EGG"
 sudo zip -rq "$EGG" EGG-INFO common pyovpn
@@ -79,23 +79,23 @@ sudo zip -rq "$EGG" EGG-INFO common pyovpn
 sudo systemctl start openvpnas
 ```
 
-## 4. Verificare
+## 4. Verify
 
 ```bash
 cd /usr/local/openvpn_as/scripts
-sudo ./sacli LicUsage          # -> [conexiuni_active, limita] ; ex. [0, 8888]
+sudo ./sacli LicUsage          # -> [active_connections, limit] ; e.g. [0, 8888]
 ```
 
-Magic number-ul `uprop.pyc` trebuie să fie cel de Python 3.14:
+The `uprop.pyc` magic number must be the Python 3.14 one:
 
 ```bash
 od -An -tx1 -N4 /home/temp/ex/pyovpn/lic/uprop.pyc   # 2b 0e 0d 0a = Python 3.14
 ```
 
-## Note
+## Notes
 
-- Singura proprietate care contează este `concurrent_connections` (limita de conexiuni simultane).
-  Poți pune orice număr (ex. `999999`). `apc` și restul nu aduc nimic pe o instanță self-hosted.
-- Dacă faci upgrade de OS și `python3` se schimbă (ex. 3.14 → 3.16), egg-ul trebuie din nou
-  cel pentru noua versiune, iar `uprop.py` recompilat cu noul `python3`. Reia installerul oficial.
-- UI admin: `https://<ip>:943/admin` (user implicit `openvpn`).
+- The only property that matters is `concurrent_connections` (the simultaneous connection limit).
+  You can set any number (e.g. `999999`). `apc` and the rest add nothing on a self-hosted instance.
+- If you upgrade the OS and `python3` changes (e.g. 3.14 → 3.16), you need the egg for the new
+  version again, and `uprop.py` recompiled with the new `python3`. Re-run the official installer.
+- Admin UI: `https://<ip>:943/admin` (default user `openvpn`).
