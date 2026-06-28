@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Necesar pentru ca pasul de regenerare să poată comite package_versiffons.txt înapoi în repo
+    permissions:
+      contents: write
 
     steps:
       - name: Verificare Repo
@@ -35,6 +38,25 @@ jobs:
           TAG="v1.0.${{ github.run_number }}"
           docker build . --file Dockerfile --tag "${{ secrets.DOCKER_USER }}/openvpn-as:${TAG}" --build-arg VERSION="${{ github.run_number }}" --build-arg BUILD_DATE="${{ github.event.head_commit.timestamp }}"
           docker build . --file Dockerfile --tag "${{ secrets.DOCKER_USER }}/openvpn-as:latest" --build-arg VERSION="${{ github.run_number }}" --build-arg BUILD_DATE="${{ github.event.head_commit.timestamp }}"
+
+      # Regenerează automat lista de pachete din imaginea construită și o comite înapoi.
+      # Push-ul cu GITHUB_TOKEN NU declanșează un build nou (+ [skip ci] ca siguranță).
+      - name: Regenerează package_versiffons.txt
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          IMAGE="${{ secrets.DOCKER_USER }}/openvpn-as:latest"
+          docker run --rm --entrypoint dpkg-query "$IMAGE" -W -f '${Package}${Version}\n' \
+            | LC_ALL=C sort > package_versiffons.txt
+          if git diff --quiet -- package_versiffons.txt; then
+            echo "package_versiffons.txt neschimbat"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package_versiffons.txt
+            git commit -m "ci: regenerare automată package_versiffons.txt [skip ci]"
+            git push
+            echo "package_versiffons.txt actualizat și comis"
+          fi
 
       # Publică imaginea Docker
       - name: Publică Docker
