@@ -1,0 +1,54 @@
+name: Keepalive
+
+# Previne dezactivarea automată a workflow-urilor cu `schedule` de către GitHub
+# (care le dezactivează după 60 de zile fără activitate în repo).
+# Rulează săptămânal: dacă repo-ul e inactiv de >50 de zile, face un commit gol
+# care resetează cronometrul de inactivitate; în plus reactivează orice workflow
+# care a ajuns dezactivat. Fără dependențe externe.
+
+on:
+  schedule:
+    - cron: '13 5 * * 1'   # luni, 05:13 UTC
+  workflow_dispatch:        # declanșare manuală
+
+permissions:
+  contents: write   # pentru commit-ul gol
+  actions: write    # pentru reactivarea workflow-urilor
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Commit gol dacă repo-ul e inactiv de >50 zile
+        run: |
+          LAST=$(git log -1 --format=%ct)
+          NOW=$(date +%s)
+          DAYS=$(( (NOW - LAST) / 86400 ))
+          echo "Zile de la ultimul commit: $DAYS"
+          if [ "$DAYS" -ge 50 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "ci: keepalive — resetare cronometru inactivitate [skip ci]"
+            git push
+            echo "Commit gol făcut — cronometrul de inactivitate a fost resetat."
+          else
+            echo "Repo activ recent — niciun commit necesar."
+          fi
+
+      - name: Reactivează workflow-urile dezactivate (self-healing)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          IDS=$(gh api "repos/${{ github.repository }}/actions/workflows" \
+            --jq '.workflows[] | select(.state != "active") | .id')
+          if [ -z "$IDS" ]; then
+            echo "Toate workflow-urile sunt active."
+          else
+            for id in $IDS; do
+              echo "Reactivez workflow $id"
+              gh api -X PUT "repos/${{ github.repository }}/actions/workflows/$id/enable" || true
+            done
+          fi
