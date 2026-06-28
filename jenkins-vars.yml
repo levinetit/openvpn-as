@@ -3,7 +3,7 @@
 # jenkins variables
 project_name: docker-openvpn-as
 external_type: na
-custom_version_command: "curl -sX GET http://as-repository.openvpn.net/as/debian/dists/noble/main/binary-amd64/Packages.gz | gunzip -c |grep -A 7 -m 1 'Package: openvpn-as' | awk -F ': ' '/Version/{print $2;exit}'"
+custom_version_command: "curl -sX GET http://packages.openvpn.net/as/debian/dists/resolute/main/binary-amd64/Packages.gz | gunzip -c |grep -A 7 -m 1 'Package: openvpn-as' | awk -F ': ' '/Version/{print $2;exit}'"
 release_type: stable
 release_tag: latest
 ls_branch: master

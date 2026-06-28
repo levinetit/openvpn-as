@@ -1,8 +1,8 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:noble
+FROM ghcr.io/linuxserver/baseimage-ubuntu:resolute
 
 ARG BUILD_DATE
 ARG VERSION
-ARG OPENVPNAS_VERSION="3.1.0"
+ARG OPENVPNAS_VERSION="3.2.1"
 ARG DEBIAN_FRONTEND="noninteractive"
 
 LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}" \
@@ -10,7 +10,7 @@ LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}" 
     image_description="Imagine Docker pentru OpenVPN Access Server" \
     openvpn_version="${OPENVPNAS_VERSION}"
 
-# Instalare dependențe și OpenVPN AS 3.1.0 (Ubuntu 24.04 Noble, Python 3.12)
+# Instalare dependențe și OpenVPN AS 3.2.1 (Ubuntu 26.04 Resolute, Python 3.14)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     bridge-utils iproute2 iptables net-tools \
@@ -19,15 +19,16 @@ RUN apt-get update && \
     sqlite3 && \
     wget -qO /etc/apt/trusted.gpg.d/as-repository.asc \
         https://as-repository.openvpn.net/as-repo-public.asc && \
-    echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://as-repository.openvpn.net/as/debian noble main" \
+    echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://packages.openvpn.net/as/debian resolute main" \
         > /etc/apt/sources.list.d/openvpn-as-repo.list && \
     apt-get update && \
-    apt-get install -y openvpn-as=3.1.0-e22fe316-Ubuntu24 && \
+    apt-get install -y openvpn-as=3.2.1-d0affc91-Ubuntu26 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copiere egg-uri patched (concurrent_connections = 8888, compatibile Python 3.10 + 3.12)
-COPY pyovpn-2.0-py3.10.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.10.egg
+# Copiere egg patched (concurrent_connections = 8888) pentru Python 3.14 — egg-ul folosit pe Ubuntu 26.04.
+# Se păstrează și py3.12 ca rezervă pentru baze mai vechi.
 COPY pyovpn-2.0-py3.12.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.12.egg
+COPY pyovpn-2.0-py3.14.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.14.egg
 
 COPY root/ /
 
