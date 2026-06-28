@@ -3,6 +3,8 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:resolute
 ARG BUILD_DATE
 ARG VERSION
 ARG OPENVPNAS_VERSION="3.2.1"
+# Versiunea exactă a pachetului apt (folosită la build ȘI la instalarea/reinstalarea în /config la runtime)
+ARG OPENVPNAS_PKG_VERSION="3.2.1-d0affc91-Ubuntu26"
 ARG DEBIAN_FRONTEND="noninteractive"
 
 LABEL build_version="LeviNetIT version:- ${VERSION} Build-date:- ${BUILD_DATE}" \
@@ -22,13 +24,20 @@ RUN apt-get update && \
     echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://packages.openvpn.net/as/debian resolute main" \
         > /etc/apt/sources.list.d/openvpn-as-repo.list && \
     apt-get update && \
-    apt-get install -y openvpn-as=3.2.1-d0affc91-Ubuntu26 && \
+    apt-get install -y openvpn-as="${OPENVPNAS_PKG_VERSION}" && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copiere egg patched (concurrent_connections = 8888) pentru Python 3.14 — egg-ul folosit pe Ubuntu 26.04.
-# Se păstrează și py3.12 ca rezervă pentru baze mai vechi.
+# Egg-uri patched (concurrent_connections = 8888). py3.14 = folosit pe Ubuntu 26.04; py3.12 rezervă.
+# Se păstrează o copie în /defaults/pyovpn-eggs/ care SUPRAVIEȚUIEȘTE reinstalării OAS la runtime
+# (30-config face `rm -rf /usr/local/openvpn_as`); scriptul 35-egg-patch le re-aplică după instalare.
+COPY pyovpn-2.0-py3.12.egg /defaults/pyovpn-eggs/pyovpn-2.0-py3.12.egg
+COPY pyovpn-2.0-py3.14.egg /defaults/pyovpn-eggs/pyovpn-2.0-py3.14.egg
 COPY pyovpn-2.0-py3.12.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.12.egg
 COPY pyovpn-2.0-py3.14.egg /usr/local/openvpn_as/lib/python/pyovpn-2.0-py3.14.egg
+
+# Activează instalarea/persistența OpenVPN AS în volumul /config la runtime (vezi 30-config).
+# 30-config folosește `apt --reinstall` ca să populeze /config chiar dacă pachetul e deja în imagine.
+RUN echo "${OPENVPNAS_PKG_VERSION}" > /version.txt
 
 COPY root/ /
 

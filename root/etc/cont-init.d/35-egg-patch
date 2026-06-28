@@ -1,0 +1,22 @@
+#!/usr/bin/with-contenv bash
+# Re-aplică egg-ul pyovpn patch-uit (concurrent_connections = 8888) DUPĂ instalarea/reinstalarea
+# OpenVPN AS din 30-config (care pune egg-ul stock). Rulează la fiecare pornire (idempotent).
+# Sursa = /defaults/pyovpn-eggs/ (baked în imagine, supraviețuiește lui `rm -rf /usr/local/openvpn_as`).
+
+EGG_SRC=/defaults/pyovpn-eggs
+EGG_DST=/usr/local/openvpn_as/lib/python
+
+if [ ! -d "$EGG_DST" ]; then
+  echo "[egg-patch] $EGG_DST inexistent — OpenVPN AS nu pare instalat, sar peste"
+  exit 0
+fi
+
+shopt -s nullglob
+applied=0
+for egg in "$EGG_SRC"/pyovpn-2.0-py3.*.egg; do
+  name=$(basename "$egg")
+  cp -f "$egg" "$EGG_DST/$name" && { echo "[egg-patch] aplicat $name"; applied=1; }
+done
+
+[ "$applied" -eq 1 ] || echo "[egg-patch] niciun egg patched găsit în $EGG_SRC"
+exit 0

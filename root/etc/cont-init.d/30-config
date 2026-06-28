@@ -27,7 +27,7 @@ if [ -f /version.txt ]; then
   if [ ! -f /config/etc/as.conf ]; then
     echo "Se instalează OpenVPN-AS pentru prima dată"
     apt-get update && \
-    apt-get install -y openvpn-as="$OPENVPNAS_VERSION" || { echo "Instalarea OpenVPN-AS a eșuat"; exit 1; }
+    apt-get install -y --reinstall openvpn-as="$OPENVPNAS_VERSION" || { echo "Instalarea OpenVPN-AS a eșuat"; exit 1; }
 
     echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
     if [ -f /var/run/openvpnas.pid ]; then
@@ -39,6 +39,7 @@ if [ -f /version.txt ]; then
     rm /version.txt
   else
     echo "Date existente găsite, se reinstalează OpenVPN-AS"
+    # (reinstalarea propriu-zisă mai jos folosește --reinstall, vezi nota)
     mkdir -p /config/backup
     cd /config/etc/db || { echo "Eșec la navigarea în /config/etc/db"; exit 1; }
 
@@ -59,7 +60,7 @@ if [ -f /version.txt ]; then
       -exec rm -rf {} +
     
     apt-get update && \
-    apt-get install -y openvpn-as="$OPENVPNAS_VERSION" || { echo "Reinstalarea OpenVPN-AS a eșuat"; exit 1; }
+    apt-get install -y --reinstall openvpn-as="$OPENVPNAS_VERSION" || { echo "Reinstalarea OpenVPN-AS a eșuat"; exit 1; }
 
     echo "Se oprește OpenVPN-AS acum; va fi repornit mai târziu după configurare"
     if [ -f /var/run/openvpnas.pid ]; then
@@ -69,8 +70,11 @@ if [ -f /version.txt ]; then
     rm /version.txt
 
     cd /config/backup || { echo "Eșec la navigarea în /config/backup"; exit 1; }
+    mkdir -p /config/etc/db
     for f in *.db; do
-      [ -f "/config/backup/$f" ] && sqlite3 /config/etc/db/"$f" < /config/backup/"$f" || echo "Restaurarea $f a eșuat."
+      # Șterge DB-ul nou (gol) creat de reinstalare înainte de import, altfel dump-ul
+      # eșuează cu „table already exists" și configul (useri/certificate) se pierde.
+      [ -f "/config/backup/$f" ] && { rm -f /config/etc/db/"$f"; sqlite3 /config/etc/db/"$f" < /config/backup/"$f"; } || echo "Restaurarea $f a eșuat."
     done
 
     rm -f /config/etc/as.conf
