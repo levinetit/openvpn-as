@@ -16,8 +16,9 @@
 | `jenkins-vars.yml` | Variabile pentru procesul de build |
 | `package_versiffons.txt` | Lista pachetelor instalate și versiunile lor (generat automat) |
 | `readme-vars.yml` | Variabile folosite pentru generarea README |
-| `pyovpn-2.0-py3.10.egg` | Modul pyovpn patched pentru Python 3.10 |
-| `pyovpn-2.0-py3.12.egg` | Modul pyovpn patched pentru Python 3.12 |
+| `pyovpn-2.0-py3.10.egg` | Modul pyovpn patched pentru Python 3.10 (legacy) |
+| `pyovpn-2.0-py3.12.egg` | Modul pyovpn patched pentru Python 3.12 (legacy) |
+| `pyovpn-2.0-py3.14.egg` | Modul pyovpn patched pentru Python 3.14 (Ubuntu 26.04, folosit curent) |
 
 ## Testarea modificărilor
 
