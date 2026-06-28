@@ -4,6 +4,6 @@
 echo '
 ───────────────────────────────────────
   OpenVPN Access Server - levinetit
-  Ubuntu 24.04 | Python 3.12 | v3.1.0
+  Ubuntu 26.04 | Python 3.14 | v3.2.1
   https://github.com/levinetit/openvpn-as
 ───────────────────────────────────────'
