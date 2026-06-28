@@ -12,6 +12,7 @@ on:
     tags: ['v*.*.*']  # Trigger pentru versiuni semantice
   pull_request:
     branches: ["master"]
+  workflow_dispatch:  # Permite declanșarea manuală din UI/API
 
 env:
   # Folosește docker.io pentru Docker Hub dacă este gol
