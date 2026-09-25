@@ -1,22 +1,68 @@
-name: Security Review
+```yaml
+name: OpenAI Codex Security Review
 
 permissions:
-  pull-requests: write  # Needed for leaving PR comments
   contents: read
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  security:
+  codex:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 2
-      
-      - uses: anthropics/claude-code-security-review@main
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Run OpenAI Codex security review
+        id: run_codex
+        uses: openai/codex-action@v1
         with:
-          comment-pr: true
-          claude-api-key: ${{ secrets.CLAUDE_API_KEY }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ":workspace"
+          prompt: |
+            Perform a comprehensive security review of this Pull Request.
+
+            Review the changes introduced by this PR and the relevant surrounding
+            code needed to understand their security impact.
+
+            Focus on:
+            - command injection
+            - SQL injection
+            - XSS
+            - SSRF
+            - RCE
+            - path traversal
+            - authentication and authorization flaws
+            - privilege escalation
+            - insecure direct object references
+            - secret and credential exposure
+            - unsafe deserialization
+            - insecure file handling
+            - cryptographic weaknesses
+            - dependency and supply-chain risks
+            - GitHub Actions and CI/CD security
+            - Docker and container security
+            - VPN/OpenVPN security issues
+            - dangerous shell usage
+            - insecure permissions and access control
+
+            For each finding provide:
+            - Severity: Critical / High / Medium / Low
+            - File and line
+            - Description
+            - Realistic attack scenario
+            - Evidence
+            - Recommended remediation
+
+            Prioritize exploitable vulnerabilities and minimize false positives.
+            Do not modify files.
+            Do not expose secrets.
+            Do not make destructive changes.
+            Return a concise but technically detailed security report.
+```
