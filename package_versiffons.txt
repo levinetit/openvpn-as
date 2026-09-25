@@ -13,7 +13,7 @@ coreutils-from-uutils0.0.0~ubuntu25
 coreutils9.5-1ubuntu2+0.0.0~ubuntu25
 cron-daemon-common3.0pl1-200ubuntu1
 cron3.0pl1-200ubuntu1
-curl8.18.0-1ubuntu2.5
+curl8.18.0-1ubuntu2.7
 dash0.5.12-12ubuntu3
 dbus-bin1.16.2-2ubuntu4
 dbus-daemon1.16.2-2ubuntu4
@@ -69,13 +69,13 @@ libcap2-bin1:2.75-10ubuntu2
 libcap21:2.75-10ubuntu2
 libcom-err21.47.2-3ubuntu4
 libcrypt11:4.5.1-1
-libcurl4t648.18.0-1ubuntu2.5
+libcurl4t648.18.0-1ubuntu2.7
 libdb5.3t645.3.28+dfsg2-10ubuntu1
 libdbus-1-31.16.2-2ubuntu4
 libdebconfclient00.280ubuntu1
 libedit23.1-20251016-1
 libelf1t640.194-4
-libexpat12.7.4-1
+libexpat12.7.4-1ubuntu0.2
 libext2fs2t641.47.2-3ubuntu4
 libffi83.5.2-4
 libgcc-s116-20260322-1ubuntu1
@@ -140,7 +140,7 @@ libsemanage-common3.9-1build1
 libsemanage23.9-1build1
 libsepol23.9-2
 libsmartcols12.41.3-3ubuntu2.2
-libsqlite3-03.46.1-9ubuntu0.2
+libsqlite3-03.46.1-9ubuntu0.3
 libss21.47.2-3ubuntu4
 libssh2-1t641.11.1-1ubuntu0.26.04.4
 libssl3t643.5.5-1ubuntu3.5
@@ -153,7 +153,7 @@ libtirpc3t641.3.7-0.1
 libudev1259.5-0ubuntu3.4
 libunistring51.3-2build1
 libuuid12.41.3-3ubuntu2.2
-libxml2-162.15.2+dfsg-0.1ubuntu0.1
+libxml2-162.15.2+dfsg-0.1ubuntu0.2
 libxmlsec1-11.3.9-1
 libxmlsec1-openssl11.3.9-1
 libxslt1.11.1.45-0.1
@@ -180,7 +180,7 @@ openssl3.5.5-1ubuntu3.5
 openvpn-as-bundled-clients35
 openvpn-as3.2.1-d0affc91-Ubuntu26
 passwd1:4.17.4-2ubuntu3
-perl-base5.40.1-7ubuntu0.2
+perl-base5.40.1-7ubuntu0.3
 pinentry-curses1.3.2-3ubuntu1
 procps2:4.0.4-9ubuntu1
 publicsuffix20260129.1928-1
@@ -227,10 +227,10 @@ python3.14-minimal3.14.4-1ubuntu0.2
 python3.143.14.4-1ubuntu0.2
 python33.14.3-0ubuntu2
 readline-common8.3-4
-rust-coreutils0.8.0-0ubuntu3
+rust-coreutils0.10.0-1ubuntu2~26.04.1
 sed4.9-2ubuntu1
 sensible-utils0.0.26build1
-sqlite33.46.1-9ubuntu0.2
+sqlite33.46.1-9ubuntu0.3
 systemd-standalone-sysusers259.5-0ubuntu3.4
 sysvinit-utils3.15-5ubuntu1
 tar1.35+dfsg-4ubuntu0.4
