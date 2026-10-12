@@ -1,4 +1,3 @@
-```yaml
 name: OpenAI Codex Security Review
 
 permissions:
@@ -65,4 +64,3 @@ jobs:
             Do not expose secrets.
             Do not make destructive changes.
             Return a concise but technically detailed security report.
-```
