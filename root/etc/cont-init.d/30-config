@@ -50,6 +50,17 @@ if [ -f /version.txt ]; then
     echo "Se face backup pentru as.conf"
     cp /config/etc/as.conf /config/backup/as.conf || echo "Backup-ul pentru as.conf a eșuat."
 
+    # Nu șterge nimic dacă backup-ul nu e complet: restaurarea de mai jos ar pierde configurația
+    if [ ! -s /config/backup/as.conf ]; then
+      echo "Backup as.conf lipsește sau e gol, se oprește înainte de ștergere"; exit 1
+    fi
+    for f in /config/etc/db/*.db; do
+      [ -f "$f" ] || continue
+      if [ ! -s "/config/backup/$(basename "$f")" ]; then
+        echo "Backup lipsă pentru $(basename "$f"), se oprește înainte de ștergere"; exit 1
+      fi
+    done
+
     cd /config || { echo "Eșec la navigarea în /config"; exit 1; }
     # Șterge tot din /config exceptând directoarele rezervate (compatibil cu sh/bash)
     find /config -mindepth 1 -maxdepth 1 \

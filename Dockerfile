@@ -20,8 +20,8 @@ RUN apt-get update && \
     python3 python3-lxml \
     sqlite3 && \
     wget -qO /etc/apt/trusted.gpg.d/as-repository.asc \
-        https://as-repository.openvpn.net/as-repo-public.asc && \
-    echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] http://packages.openvpn.net/as/debian resolute main" \
+        https://packages.openvpn.net/as-repo-public.asc && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/as-repository.asc] https://packages.openvpn.net/as/debian resolute main" \
         > /etc/apt/sources.list.d/openvpn-as-repo.list && \
     apt-get update && \
     apt-get install -y openvpn-as="${OPENVPNAS_PKG_VERSION}" && \
