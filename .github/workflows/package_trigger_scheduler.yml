@@ -21,6 +21,6 @@ jobs:
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            -d '{"ref":"master"}' \
+            -d '{"ref":"master","inputs":{"force":"true"}}' \
             https://api.github.com/repos/${{ github.repository }}/actions/workflows/docker-image.yml/dispatches
           echo "**** Rebuild declanșat cu succes ****"
