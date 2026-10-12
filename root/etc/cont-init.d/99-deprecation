@@ -1,9 +1,10 @@
 #!/usr/bin/with-contenv bash
 
-# Afișează informații despre imagine la pornire
-echo '
+# Afișează informații despre imagine la pornire (versiunea vine din pachetul instalat)
+AS_VERSION=$(dpkg-query -W -f='${Version}' openvpn-as 2>/dev/null || echo "necunoscută")
+echo "
 ───────────────────────────────────────
   OpenVPN Access Server - levinetit
-  Ubuntu 26.04 | Python 3.14 | v3.2.1
+  Ubuntu 26.04 | Python 3.14 | ${AS_VERSION}
   https://github.com/levinetit/openvpn-as
-───────────────────────────────────────'
+───────────────────────────────────────"

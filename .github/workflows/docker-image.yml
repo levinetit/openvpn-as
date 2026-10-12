@@ -5,6 +5,15 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Reconstruiește chiar dacă există deja imaginea pentru ultima versiune OpenVPN AS"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -24,25 +33,75 @@ jobs:
           echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
           echo "BUILD_DATE=${{ github.event.head_commit.timestamp }}" >> $GITHUB_ENV
 
+      # Ultima versiune OpenVPN AS din repo-ul oficial. La rulările automate (workflow_dispatch fără
+      # force) nu reconstruiește dacă tag-ul as-<versiune> există deja pe Docker Hub.
+      - name: Rezolvă versiunea OpenVPN AS
+        id: ver
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          EVENT: ${{ github.event_name }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          PKG=$(curl -fsSL https://packages.openvpn.net/as/debian/dists/resolute/main/binary-amd64/Packages.gz \
+            | gunzip -c | awk '/^Package: openvpn-as$/{p=1} p&&/^Version:/{print $2} /^$/{p=0}' | sort -V | tail -1)
+          if [ -z "$PKG" ]; then echo "Nu s-a putut afla ultima versiune OpenVPN AS"; exit 1; fi
+          AS_TAG="as-$(printf '%s' "$PKG" | tr -c 'A-Za-z0-9._-' '_')"
+          SKIP=false
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$FORCE" != "true" ]; then
+            CODE=$(curl -s -o /dev/null -w '%{http_code}' "https://hub.docker.com/v2/repositories/${DOCKER_USER}/openvpn-as/tags/${AS_TAG}/")
+            if [ "$CODE" = "200" ]; then SKIP=true; fi
+          fi
+          echo "pkg=$PKG" >> "$GITHUB_OUTPUT"
+          echo "as_tag=$AS_TAG" >> "$GITHUB_OUTPUT"
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+          echo "**** Ultima versiune: $PKG (tag $AS_TAG), skip=$SKIP ****"
+
       # Autentificare pe Docker Hub cu o metodă sigură
       - name: docker login
+        if: github.event_name != 'pull_request' && steps.ver.outputs.skip != 'true'
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: |
-          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
 
       # Construiește imaginea Docker
       - name: Construiește Imaginea Docker
+        if: steps.ver.outputs.skip != 'true'
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
         run: |
-          TAG="v1.0.${{ github.run_number }}"
-          docker build . --file Dockerfile --tag "${{ secrets.DOCKER_USER }}/openvpn-as:${TAG}" --build-arg VERSION="${{ github.run_number }}" --build-arg BUILD_DATE="${{ github.event.head_commit.timestamp }}"
-          docker build . --file Dockerfile --tag "${{ secrets.DOCKER_USER }}/openvpn-as:latest" --build-arg VERSION="${{ github.run_number }}" --build-arg BUILD_DATE="${{ github.event.head_commit.timestamp }}"
+          IMG="${DOCKER_USER:-local}/openvpn-as"
+          docker build . --file Dockerfile \
+            --tag "${IMG}:v1.0.${{ github.run_number }}" --tag "${IMG}:latest" --tag "${IMG}:${{ steps.ver.outputs.as_tag }}" \
+            --build-arg OPENVPNAS_PKG_VERSION="${{ steps.ver.outputs.pkg }}" \
+            --build-arg OPENVPNAS_VERSION="${{ steps.ver.outputs.pkg }}" \
+            --build-arg VERSION="${{ github.run_number }}" \
+            --build-arg BUILD_DATE="${{ github.event.head_commit.timestamp }}"
+
+      # Imaginea nouă trebuie să pornească și să răspundă pe :943 ÎNAINTE de publicare;
+      # altfel `latest` stricat ar ajunge în producție la următorul pull.
+      - name: Test de pornire
+        if: steps.ver.outputs.skip != 'true'
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        run: |
+          IMG="${DOCKER_USER:-local}/openvpn-as:latest"
+          docker run -d --name smoke --cap-add NET_ADMIN --device /dev/net/tun:/dev/net/tun "$IMG"
+          # 50-interface leagă panoul pe IP-ul interfeței eth0, nu pe localhost
+          IPA=$(docker inspect smoke --format '{{.NetworkSettings.IPAddress}}')
+          for i in $(seq 1 40); do
+            if curl -fsk -m 5 -o /dev/null "https://${IPA}:943/"; then
+              echo "**** Imaginea pornește și răspunde pe ${IPA}:943 ****"; exit 0
+            fi
+            sleep 5
+          done
+          echo "**** Imaginea NU a pornit în 200s ****"; docker logs smoke | tail -60; exit 1
 
       # Regenerează automat lista de pachete din imaginea construită și o comite înapoi.
       # Push-ul cu GITHUB_TOKEN NU declanșează un build nou (+ [skip ci] ca siguranță).
       - name: Regenerează package_versiffons.txt
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && steps.ver.outputs.skip != 'true'
         run: |
           IMAGE="${{ secrets.DOCKER_USER }}/openvpn-as:latest"
           docker run --rm --entrypoint dpkg-query "$IMAGE" -W -f '${Package}${Version}\n' \
@@ -60,13 +119,16 @@ jobs:
 
       # Publică imaginea Docker
       - name: Publică Docker
+        if: github.event_name != 'pull_request' && steps.ver.outputs.skip != 'true'
         run: |
           TAG="v1.0.${{ github.run_number }}"
           docker push "${{ secrets.DOCKER_USER }}/openvpn-as:${TAG}"
+          docker push "${{ secrets.DOCKER_USER }}/openvpn-as:${{ steps.ver.outputs.as_tag }}"
           docker push "${{ secrets.DOCKER_USER }}/openvpn-as:latest"
 
       # Șterge versiunile mai vechi, păstrând doar ultimele 3
       - name: Șterge versiunile mai vechi
+        if: github.event_name != 'pull_request' && steps.ver.outputs.skip != 'true'
         run: |
           # Lista versiunilor existente
           IMAGES=$(docker images --filter=reference="${{ secrets.DOCKER_USER }}/openvpn-as:v1.0.*" --format "{{.Repository}}:{{.Tag}}")

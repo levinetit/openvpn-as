@@ -5,6 +5,10 @@ on:
     - cron: '0 4 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   external-trigger-master:
     runs-on: ubuntu-latest
@@ -20,7 +24,7 @@ jobs:
 
           # Obține cea mai recentă versiune din repo-ul oficial (resolute = Ubuntu 26.04)
           # -L urmărește redirectul 301; pattern ancorat cu ^ și $ pentru a nu prinde openvpn-as-bundled-clients
-          EXT_RELEASE=$(curl -sL http://packages.openvpn.net/as/debian/dists/resolute/main/binary-amd64/Packages.gz \
+          EXT_RELEASE=$(curl -sL https://packages.openvpn.net/as/debian/dists/resolute/main/binary-amd64/Packages.gz \
             | gunzip -c | grep -A 7 -m 1 '^Package: openvpn-as$' | awk -F ': ' '/Version/{print $2;exit}')
 
           if [ -z "${EXT_RELEASE}" ] || [ "${EXT_RELEASE}" == "null" ]; then
