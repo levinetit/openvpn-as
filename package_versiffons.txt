@@ -122,7 +122,7 @@ libpam-modules-bin1.7.0-5ubuntu3.2
 libpam-modules1.7.0-5ubuntu3.2
 libpam-runtime1.7.0-5ubuntu3.2
 libpam0g1.7.0-5ubuntu3.2
-libpcap0.8t641.10.6-1ubuntu1
+libpcap0.8t641.10.6-1ubuntu1.1
 libpcre2-8-010.46-1build1
 libproc2-02:4.0.4-9ubuntu1
 libpsl5t640.21.2-1.1build2
@@ -143,7 +143,7 @@ libsmartcols12.41.3-3ubuntu2.2
 libsqlite3-03.46.1-9ubuntu0.3
 libss21.47.2-3ubuntu4
 libssh2-1t641.11.1-1ubuntu0.26.04.4
-libssl3t643.5.5-1ubuntu3.5
+libssl3t643.5.5-1ubuntu3.7
 libstdc++616-20260322-1ubuntu1
 libsystemd0259.5-0ubuntu3.4
 libtasn1-64.21.0-2
@@ -153,7 +153,7 @@ libtirpc3t641.3.7-0.1
 libudev1259.5-0ubuntu3.4
 libunistring51.3-2build1
 libuuid12.41.3-3ubuntu2.2
-libxml2-162.15.2+dfsg-0.1ubuntu0.2
+libxml2-162.15.2+dfsg-0.1ubuntu0.3
 libxmlsec1-11.3.9-1
 libxmlsec1-openssl11.3.9-1
 libxslt1.11.1.45-0.1
@@ -175,10 +175,10 @@ net-tools2.10-2ubuntu1
 netbase6.5build1
 netcat-openbsd1.234-1
 nftables1.1.6-1
-openssl-provider-legacy3.5.5-1ubuntu3.5
-openssl3.5.5-1ubuntu3.5
+openssl-provider-legacy3.5.5-1ubuntu3.7
+openssl3.5.5-1ubuntu3.7
 openvpn-as-bundled-clients35
-openvpn-as3.2.1-d0affc91-Ubuntu26
+openvpn-as3.2.3-8444f22d-Ubuntu26
 passwd1:4.17.4-2ubuntu3
 perl-base5.40.1-7ubuntu0.3
 pinentry-curses1.3.2-3ubuntu1
@@ -204,7 +204,7 @@ python3-jaraco.context6.0.1-2
 python3-jaraco.functools4.1.0-1build1
 python3-jaraco.text4.0.0-1build1
 python3-ldap32.9.1-2build1
-python3-lxml6.0.2-1build1
+python3-lxml6.0.2-1ubuntu0.1
 python3-minimal3.14.3-0ubuntu2
 python3-more-itertools10.8.0-1build1
 python3-netaddr1.3.0-1build1
@@ -215,7 +215,7 @@ python3-priority2.0.0-1build1
 python3-pyasn1-modules0.4.1-2build1
 python3-pyasn10.6.3-1ubuntu0.1
 python3-pycparser3.0-1
-python3-requests2.32.5+dfsg-1ubuntu1
+python3-requests2.32.5+dfsg-1ubuntu1.1
 python3-setuptools78.1.1-0.1build1
 python3-typeguard4.4.4-2
 python3-typing-extensions4.15.0-2
